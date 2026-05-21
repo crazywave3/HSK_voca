@@ -6,189 +6,89 @@
 <title>HSK 플래시카드</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   body {
     font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
-    background: #f5f5f0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px 16px 40px;
-    color: #1a1a1a;
+    background: #f5f5f0; min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 20px 16px 40px; color: #1a1a1a;
   }
-
-  h1 {
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    margin-bottom: 20px;
-    color: #111;
-  }
-
-  /* 급수 탭 */
-  .tabs {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 24px;
-  }
+  h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 20px; color: #111; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 24px; }
   .tab {
-    padding: 8px 20px;
-    border-radius: 20px;
-    border: 1.5px solid #ddd;
-    background: #fff;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-    color: #666;
+    padding: 8px 20px; border-radius: 20px; border: 1.5px solid #ddd;
+    background: #fff; font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: all 0.15s; color: #666;
   }
   .tab:hover { border-color: #999; color: #333; }
   .tab.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
-
-  /* 진행 표시 */
   .progress-bar {
-    width: 100%;
-    max-width: 480px;
-    height: 4px;
-    background: #e0e0e0;
-    border-radius: 2px;
-    margin-bottom: 12px;
-    overflow: hidden;
+    width: 100%; max-width: 480px; height: 4px; background: #e0e0e0;
+    border-radius: 2px; margin-bottom: 12px; overflow: hidden;
   }
-  .progress-fill {
-    height: 100%;
-    background: #1a1a1a;
-    border-radius: 2px;
-    transition: width 0.3s ease;
-  }
-  .progress-text {
-    font-size: 13px;
-    color: #888;
-    margin-bottom: 24px;
-  }
-
-  /* 카드 영역 */
-  .card-area {
-    width: 100%;
-    max-width: 480px;
-    perspective: 1200px;
-    margin-bottom: 28px;
-  }
-
+  .progress-fill { height: 100%; background: #1a1a1a; border-radius: 2px; transition: width 0.3s ease; }
+  .progress-text { font-size: 13px; color: #888; margin-bottom: 24px; }
+  .card-area { width: 100%; max-width: 480px; perspective: 1200px; margin-bottom: 28px; }
   .card-inner {
-    position: relative;
-    width: 100%;
-    padding-top: 60%;
+    position: relative; width: 100%; padding-top: 65%;
     transform-style: preserve-3d;
     transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
   }
   .card-inner.flipped { transform: rotateY(180deg); }
-
   .card-face {
-    position: absolute;
-    inset: 0;
-    backface-visibility: hidden;
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
+    position: absolute; inset: 0; backface-visibility: hidden;
+    border-radius: 16px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    user-select: none; -webkit-tap-highlight-color: transparent;
+    padding: 24px;
   }
-
   .card-front {
-    background: #1a1a1a;
-    border: none;
+    background: #1a1a1a; border: none;
     box-shadow: 0 4px 20px rgba(0,0,0,0.18);
   }
   .card-back {
-    background: #fff;
-    border: 1.5px solid #e8e8e8;
+    background: #fff; border: 1.5px solid #e8e8e8;
     transform: rotateY(180deg);
     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    justify-content: space-between;
   }
-
-  .hanzi-front {
-    font-size: clamp(48px, 12vw, 88px);
-    font-weight: 400;
-    color: #fff;
-    line-height: 1;
+  .hanzi-front { font-size: clamp(48px, 12vw, 88px); font-weight: 400; color: #fff; line-height: 1; }
+  .hint { margin-top: 16px; font-size: 13px; color: #666; }
+  .back-top {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; flex: 1; width: 100%;
   }
-  .hint {
-    margin-top: 16px;
-    font-size: 13px;
-    color: #666;
+  .hanzi-back { font-size: clamp(36px, 9vw, 64px); font-weight: 400; color: #111; line-height: 1; margin-bottom: 12px; }
+  .pinyin { font-size: clamp(16px, 4.5vw, 26px); color: #666; letter-spacing: 0.5px; }
+  .divider { width: 100%; height: 1px; background: #e8e8e8; flex-shrink: 0; }
+  .example {
+    width: 100%; padding: 14px 4px 0;
+    font-size: clamp(13px, 3.5vw, 16px); color: #444;
+    line-height: 1.6; text-align: center; letter-spacing: 0.3px; flex-shrink: 0;
   }
-
-  .hanzi-back {
-    font-size: clamp(40px, 10vw, 72px);
-    font-weight: 400;
-    color: #111;
-    line-height: 1;
-    margin-bottom: 14px;
-  }
-  .pinyin {
-    font-size: clamp(18px, 5vw, 28px);
-    color: #666;
-    letter-spacing: 0.5px;
-  }
-
-  /* 버튼 영역 */
-  .nav-btns {
-    display: flex;
-    gap: 12px;
-    width: 100%;
-    max-width: 480px;
-  }
+  .nav-btns { display: flex; gap: 12px; width: 100%; max-width: 480px; }
   .btn {
-    flex: 1;
-    padding: 14px;
-    border-radius: 12px;
-    border: 1.5px solid #ddd;
-    background: #fff;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-    color: #333;
+    flex: 1; padding: 14px; border-radius: 12px; border: 1.5px solid #ddd;
+    background: #fff; font-size: 15px; font-weight: 600; cursor: pointer;
+    transition: all 0.15s; color: #333;
   }
   .btn:hover { background: #f0f0f0; border-color: #bbb; }
   .btn:active { transform: scale(0.97); }
   .btn.primary { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
   .btn.primary:hover { background: #333; }
-
-  /* 셔플 버튼 */
   .shuffle-btn {
-    margin-top: 16px;
-    padding: 10px 24px;
-    border-radius: 20px;
-    border: 1.5px solid #ddd;
-    background: #fff;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    color: #666;
-    transition: all 0.15s;
+    margin-top: 16px; padding: 10px 24px; border-radius: 20px;
+    border: 1.5px solid #ddd; background: #fff; font-size: 13px;
+    font-weight: 600; cursor: pointer; color: #666; transition: all 0.15s;
   }
   .shuffle-btn:hover { border-color: #999; color: #333; }
-
-  /* 완료 화면 */
   .done-screen {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    width: 100%;
-    max-width: 480px;
-    text-align: center;
+    display: none; flex-direction: column; align-items: center;
+    gap: 16px; width: 100%; max-width: 480px; text-align: center;
   }
   .done-screen .big { font-size: 48px; }
   .done-screen h2 { font-size: 22px; font-weight: 700; }
   .done-screen p { font-size: 15px; color: #666; }
-
   @media (max-width: 480px) {
     body { padding: 16px 12px 32px; }
     .tab { padding: 7px 15px; font-size: 13px; }
@@ -196,18 +96,14 @@
 </style>
 </head>
 <body>
-
 <h1>HSK 플래시카드</h1>
-
 <div class="tabs">
   <button class="tab active" data-level="hsk1" onclick="setLevel('hsk1', this)">HSK 1급</button>
   <button class="tab" data-level="hsk2" onclick="setLevel('hsk2', this)">HSK 2급</button>
   <button class="tab" data-level="hsk3" onclick="setLevel('hsk3', this)">HSK 3급</button>
 </div>
-
 <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 <div class="progress-text" id="progressText"></div>
-
 <div class="card-area" id="cardArea">
   <div class="card-inner" id="cardInner" onclick="flipCard()">
     <div class="card-face card-front">
@@ -215,46 +111,39 @@
       <div class="hint">터치하면 뒤집기</div>
     </div>
     <div class="card-face card-back">
-      <div class="hanzi-back" id="cardBackHanzi"></div>
-      <div class="pinyin" id="cardBackPinyin"></div>
+      <div class="back-top">
+        <div class="hanzi-back" id="cardBackHanzi"></div>
+        <div class="pinyin" id="cardBackPinyin"></div>
+      </div>
+      <div class="divider"></div>
+      <div class="example" id="cardExample"></div>
     </div>
   </div>
 </div>
-
 <div class="nav-btns">
   <button class="btn" onclick="prevCard()">← 이전</button>
   <button class="btn primary" onclick="nextCard()">다음 →</button>
 </div>
-
 <button class="shuffle-btn" onclick="shuffleCards()">🔀 섞기</button>
-
 <div class="done-screen" id="doneScreen">
   <div class="big">🎉</div>
   <h2>완료!</h2>
   <p id="doneText"></p>
   <button class="btn primary" style="max-width:200px" onclick="restart()">처음부터</button>
 </div>
-
 <script>
-const RAW = {"hsk1": [{"front": "爱", "back": "爱 [ài]"}, {"front": "八", "back": "八 [bā]"}, {"front": "爸爸", "back": "爸爸 [bàba]"}, {"front": "杯子", "back": "杯子 [bēizi]"}, {"front": "北京", "back": "北京 [Běijīng]"}, {"front": "本", "back": "本 [běn]"}, {"front": "不", "back": "不 [bù]"}, {"front": "不客气", "back": "不客气 [búkèqi]"}, {"front": "菜", "back": "菜 [cài]"}, {"front": "茶", "back": "茶 [chá]"}, {"front": "吃", "back": "吃 [chī]"}, {"front": "出租车", "back": "出租车 [chūzūchē]"}, {"front": "大", "back": "大 [dà]"}, {"front": "打电话", "back": "打电话 [dǎ diànhuà]"}, {"front": "的", "back": "的 [de]"}, {"front": "点", "back": "点 [diǎn]"}, {"front": "电脑", "back": "电脑 [diànnǎo]"}, {"front": "电视", "back": "电视 [diànshì]"}, {"front": "电影", "back": "电影 [diànyǐng]"}, {"front": "东西", "back": "东西 [dōngxi]"}, {"front": "都", "back": "都 [dōu]"}, {"front": "读", "back": "读 [dú]"}, {"front": "对不起", "back": "对不起 [duìbuqǐ]"}, {"front": "多", "back": "多 [duō]"}, {"front": "多少", "back": "多少 [duōshao]"}, {"front": "儿子", "back": "儿子 [érzi]"}, {"front": "二", "back": "二 [èr]"}, {"front": "饭店", "back": "饭店 [fàndiàn]"}, {"front": "飞机", "back": "飞机 [fēijī]"}, {"front": "分钟", "back": "分钟 [fēnzhōng]"}, {"front": "高兴", "back": "高兴 [gāoxìng]"}, {"front": "个", "back": "个 [gè][ge]"}, {"front": "工作", "back": "工作 [gōngzuò]"}, {"front": "狗", "back": "狗 [gǒu]"}, {"front": "汉语", "back": "汉语 [Hànyǔ]"}, {"front": "好", "back": "好 [hǎo]"}, {"front": "号", "back": "号 [hào]"}, {"front": "喝", "back": "喝 [hē]"}, {"front": "很", "back": "很 [hěn]"}, {"front": "后面", "back": "后面 [hòumiàn]"}, {"front": "回", "back": "回 [huí]"}, {"front": "会", "back": "会 [huì]"}, {"front": "几", "back": "几 [jǐ]"}, {"front": "家", "back": "家 [jiā]"}, {"front": "叫", "back": "叫 [jiào]"}, {"front": "今天", "back": "今天 [jīntiān]"}, {"front": "九", "back": "九 [jiǔ]"}, {"front": "开", "back": "开 [kāi]"}, {"front": "看", "back": "看 [kàn]"}, {"front": "看见", "back": "看见 [kànjiàn]"}, {"front": "块", "back": "块 [kuài]"}, {"front": "来", "back": "来 [lái]"}, {"front": "老师", "back": "老师 [lǎoshī]"}, {"front": "了", "back": "了 [le]"}, {"front": "冷", "back": "冷 [lěng]"}, {"front": "里", "back": "里 [lǐ]"}, {"front": "六", "back": "六 [liù]"}, {"front": "妈妈", "back": "妈妈 [māma]"}, {"front": "吗", "back": "吗 [ma]"}, {"front": "买", "back": "买 [mǎi]"}, {"front": "猫", "back": "猫 [māo]"}, {"front": "没关系", "back": "没关系 [méi guānxi]"}, {"front": "没有", "back": "没有 [méiyǒu]"}, {"front": "米饭", "back": "米饭 [mǐfàn]"}, {"front": "名字", "back": "名字 [míngzi]"}, {"front": "明天", "back": "明天 [míngtiān]"}, {"front": "哪", "back": "哪 [nǎ]"}, {"front": "哪儿", "back": "哪儿 [nǎr]"}, {"front": "那", "back": "那 [nà]"}, {"front": "呢", "back": "呢 [ne]"}, {"front": "能", "back": "能 [néng]"}, {"front": "你", "back": "你 [nǐ]"}, {"front": "年", "back": "年 [nián]"}, {"front": "女儿", "back": "女儿 [nǚ'ér]"}, {"front": "朋友", "back": "朋友 [péngyou]"}, {"front": "漂亮", "back": "漂亮 [piàoliang]"}, {"front": "苹果", "back": "苹果 [píngguǒ]"}, {"front": "七", "back": "七 [qī]"}, {"front": "钱", "back": "钱 [qián]"}, {"front": "前面", "back": "前面 [qiánmiàn]"}, {"front": "请", "back": "请 [qǐng]"}, {"front": "去", "back": "去 [qù]"}, {"front": "热", "back": "热 [rè]"}, {"front": "人", "back": "人 [rén]"}, {"front": "认识", "back": "认识 [rènshi]"}, {"front": "三", "back": "三 [sān]"}, {"front": "商店", "back": "商店 [shāngdiàn]"}, {"front": "上", "back": "上 [shàng]"}, {"front": "少", "back": "少 [shǎo]"}, {"front": "上午", "back": "上午 [shàngwǔ]"}, {"front": "谁", "back": "谁 [shéi]"}, {"front": "什么", "back": "什么 [shénme]"}, {"front": "十", "back": "十 [shí]"}, {"front": "时候", "back": "时候 [shíhou]"}, {"front": "是", "back": "是 [shì]"}, {"front": "书", "back": "书 [shū]"}, {"front": "水", "back": "水 [shuǐ]"}, {"front": "水果", "back": "水果 [shuǐguǒ]"}, {"front": "睡觉", "back": "睡觉 [shuìjiào]"}, {"front": "说", "back": "说 [shuō]"}, {"front": "四", "back": "四 [sì]"}, {"front": "岁", "back": "岁 [suì]"}, {"front": "他", "back": "他 [tā]"}, {"front": "她", "back": "她 [tā]"}, {"front": "太", "back": "太 [tài]"}, {"front": "天气", "back": "天气 [tiānqì]"}, {"front": "听", "back": "听 [tīng]"}, {"front": "同学", "back": "同学 [tóngxué]"}, {"front": "喂", "back": "喂 [wèi]"}, {"front": "我", "back": "我 [wǒ]"}, {"front": "我们", "back": "我们 [wǒmen]"}, {"front": "五", "back": "五 [wǔ]"}, {"front": "喜欢", "back": "喜欢 [xǐhuan]"}, {"front": "下", "back": "下 [xià]"}, {"front": "下午", "back": "下午 [xiàwǔ]"}, {"front": "下雨", "back": "下雨 [xiàyǔ]"}, {"front": "先生", "back": "先生 [xiānsheng]"}, {"front": "现在", "back": "现在 [xiànzài]"}, {"front": "想", "back": "想 [xiǎng]"}, {"front": "小", "back": "小 [xiǎo]"}, {"front": "小姐", "back": "小姐 [xiǎojie]"}, {"front": "些", "back": "些 [xiē]"}, {"front": "写", "back": "写 [xiě]"}, {"front": "谢谢", "back": "谢谢 [xièxie]"}, {"front": "星期", "back": "星期 [xīngqī]"}, {"front": "学生", "back": "学生 [xuésheng]"}, {"front": "学习", "back": "学习 [xuéxí]"}, {"front": "学校", "back": "学校 [xuéxiào]"}, {"front": "一", "back": "一 [yī]"}, {"front": "一点儿", "back": "一点儿 [yīdiǎnr]"}, {"front": "衣服", "back": "衣服 [yīfu]"}, {"front": "医生", "back": "医生 [yīshēng]"}, {"front": "医院", "back": "医院 [yīyuàn]"}, {"front": "椅子", "back": "椅子 [yǐzi]"}, {"front": "有", "back": "有 [yǒu]"}, {"front": "月", "back": "月 [yuè]"}, {"front": "在", "back": "在 [zài]"}, {"front": "再见", "back": "再见 [zàijiàn]"}, {"front": "怎么", "back": "怎么 [zěnme]"}, {"front": "这", "back": "这 [zhè]"}, {"front": "中国", "back": "中国 [Zhōngguó]"}, {"front": "中午", "back": "中午 [zhōngwǔ]"}, {"front": "住", "back": "住 [zhù]"}, {"front": "桌子", "back": "桌子 [zhuōzi]"}, {"front": "字", "back": "字 [zì]"}, {"front": "昨天", "back": "昨天 [zuótiān]"}, {"front": "和", "back": "和 [hé]"}, {"front": "怎么样", "back": "怎么样 [zěnmeyàng]"}, {"front": "坐", "back": "坐 [zuò]"}, {"front": "做", "back": "做 [zuò]"}], "hsk2": [{"front": "吧", "back": "吧 [ba]"}, {"front": "白", "back": "白 [bái]"}, {"front": "百", "back": "百 [bǎi]"}, {"front": "帮助", "back": "帮助 [bāngzhù]"}, {"front": "报纸", "back": "报纸 [bàozhǐ]"}, {"front": "比", "back": "比 [bǐ]"}, {"front": "别", "back": "别 [bié]"}, {"front": "宾馆", "back": "宾馆 [bīnguǎn]"}, {"front": "长", "back": "长 [cháng]"}, {"front": "唱歌", "back": "唱歌 [chànggē]"}, {"front": "出", "back": "出 [chū]"}, {"front": "穿", "back": "穿 [chuān]"}, {"front": "次", "back": "次 [cì]"}, {"front": "从", "back": "从 [cóng]"}, {"front": "错", "back": "错 [cuò]"}, {"front": "打篮球", "back": "打篮球 [dǎ lánqiú]"}, {"front": "大家", "back": "大家 [dàjiā]"}, {"front": "到", "back": "到 [dào]"}, {"front": "得", "back": "得 [dé]"}, {"front": "等", "back": "等 [děng]"}, {"front": "弟弟", "back": "弟弟 [dìdi]"}, {"front": "第一", "back": "第一 [dìyī]"}, {"front": "懂", "back": "懂 [dǒng]"}, {"front": "对", "back": "对 [duì]"}, {"front": "房间", "back": "房间 [fángjiān]"}, {"front": "非常", "back": "非常 [fēicháng]"}, {"front": "服务员", "back": "服务员 [fúwùyuán]"}, {"front": "高", "back": "高 [gāo]"}, {"front": "告诉", "back": "告诉 [gàosu]"}, {"front": "哥哥", "back": "哥哥 [gēge]"}, {"front": "给", "back": "给 [gěi]"}, {"front": "公共汽车", "back": "公共汽车 [gōnggòng qìchē]"}, {"front": "公司", "back": "公司 [gōngsī]"}, {"front": "贵", "back": "贵 [guì]"}, {"front": "过", "back": "过 [guo]"}, {"front": "还", "back": "还 [hái]"}, {"front": "孩子", "back": "孩子 [háizi]"}, {"front": "好吃", "back": "好吃 [hǎochī]"}, {"front": "黑", "back": "黑 [hēi]"}, {"front": "红", "back": "红 [hóng]"}, {"front": "火车站", "back": "火车站 [huǒchēzhàn]"}, {"front": "机场", "back": "机场 [jīchǎng]"}, {"front": "鸡蛋", "back": "鸡蛋 [jīdàn]"}, {"front": "件", "back": "件 [jiàn]"}, {"front": "教室", "back": "教室 [jiàoshì]"}, {"front": "姐姐", "back": "姐姐 [jiějie]"}, {"front": "介绍", "back": "介绍 [jièshào]"}, {"front": "进", "back": "进 [jìn]"}, {"front": "近", "back": "近 [jìn]"}, {"front": "就", "back": "就 [jiù]"}, {"front": "觉得", "back": "觉得 [juéde]"}, {"front": "咖啡", "back": "咖啡 [kāfēi]"}, {"front": "开始", "back": "开始 [kāishǐ]"}, {"front": "考试", "back": "考试 [kǎoshì]"}, {"front": "可能", "back": "可能 [kěnéng]"}, {"front": "可以", "back": "可以 [kěyǐ]"}, {"front": "课", "back": "课 [kè]"}, {"front": "快", "back": "快 [kuài]"}, {"front": "快乐", "back": "快乐 [kuàilè]"}, {"front": "累", "back": "累 [lèi]"}, {"front": "离", "back": "离 [lí]"}, {"front": "两", "back": "两 [liǎng]"}, {"front": "零", "back": "零 [líng]"}, {"front": "路", "back": "路 [lù]"}, {"front": "旅游", "back": "旅游 [lǚyóu]"}, {"front": "卖", "back": "卖 [mài]"}, {"front": "慢", "back": "慢 [màn]"}, {"front": "忙", "back": "忙 [máng]"}, {"front": "每", "back": "每 [měi]"}, {"front": "妹妹", "back": "妹妹 [mèimei]"}, {"front": "面条", "back": "面条 [miàntiáo]"}, {"front": "门", "back": "门 [mén]"}, {"front": "男", "back": "男 [nán]"}, {"front": "您", "back": "您 [nín]"}, {"front": "牛奶", "back": "牛奶 [niúnǎi]"}, {"front": "女", "back": "女 [nǚ]"}, {"front": "旁边", "back": "旁边 [pángbiān]"}, {"front": "跑步", "back": "跑步 [pǎobù]"}, {"front": "便宜", "back": "便宜 [piányi]"}, {"front": "票", "back": "票 [piào]"}, {"front": "妻子", "back": "妻子 [qīzi]"}, {"front": "起床", "back": "起床 [qǐchuáng]"}, {"front": "千", "back": "千 [qiān]"}, {"front": "铅笔", "back": "铅笔 [qiānbǐ]"}, {"front": "请", "back": "请 [qǐng]"}, {"front": "去年", "back": "去年 [qùnián]"}, {"front": "让", "back": "让 [ràng]"}, {"front": "日", "back": "日 [rì]"}, {"front": "上班", "back": "上班 [shàngbān]"}, {"front": "身体", "back": "身体 [shēntǐ]"}, {"front": "生病", "back": "生病 [shēngbìng]"}, {"front": "生日", "back": "生日 [shēngrì]"}, {"front": "时间", "back": "时间 [shíjiān]"}, {"front": "事情", "back": "事情 [shìqing]"}, {"front": "手机", "back": "手机 [shǒujī]"}, {"front": "手表", "back": "手表 [shǒubiǎo]"}, {"front": "说话", "back": "说话 [shuōhuà]"}, {"front": "送", "back": "送 [sòng]"}, {"front": "虽然..但是..", "back": "虽然..但是.. [suīrán.. dànshì...]"}, {"front": "它", "back": "它 [tā]"}, {"front": "踢足球", "back": "踢足球 [tīzúqiú]"}, {"front": "题", "back": "题 [tí]"}, {"front": "跳舞", "back": "跳舞 [tiàowǔ]"}, {"front": "外", "back": "外 [wài]"}, {"front": "完", "back": "完 [wán]"}, {"front": "玩", "back": "玩 [wán]"}, {"front": "晚上", "back": "晚上 [wǎnshang]"}, {"front": "往", "back": "往 [wǎng]"}, {"front": "为什么", "back": "为什么 [wèishénme]"}, {"front": "问", "back": "问 [wèn]"}, {"front": "问题", "back": "问题 [wèntí]"}, {"front": "西瓜", "back": "西瓜 [xīguā]"}, {"front": "希望", "back": "希望 [xīwàng]"}, {"front": "洗", "back": "洗 [xǐ]"}, {"front": "小时", "back": "小时 [xiǎoshí]"}, {"front": "笑", "back": "笑 [xiào]"}, {"front": "新", "back": "新 [xīn]"}, {"front": "姓", "back": "姓 [xìng]"}, {"front": "休息", "back": "休息 [xiūxi]"}, {"front": "雪", "back": "雪 [xuě]"}, {"front": "颜色", "back": "颜色 [yánsè]"}, {"front": "眼睛", "back": "眼睛 [yǎnjing]"}, {"front": "羊肉", "back": "羊肉 [yángròu]"}, {"front": "药", "back": "药 [yào]"}, {"front": "要", "back": "要 [yào]"}, {"front": "也", "back": "也 [yě]"}, {"front": "一下", "back": "一下 [yīxià]"}, {"front": "一起", "back": "一起 [yīqǐ]"}, {"front": "已经", "back": "已经 [yǐjing]"}, {"front": "意思", "back": "意思 [yìsi]"}, {"front": "阴", "back": "阴 [yīn]"}, {"front": "因为..所以", "back": "因为..所以 [yīnwèi suǒyǐ]"}, {"front": "游泳", "back": "游泳 [yóuyǒng]"}, {"front": "右边", "back": "右边 [yòubiān]"}, {"front": "鱼", "back": "鱼 [yú]"}, {"front": "远", "back": "远 [yuǎn]"}, {"front": "运动", "back": "运动 [yùndòng]"}, {"front": "再", "back": "再 [zài]"}, {"front": "早上", "back": "早上 [zǎoshang]"}, {"front": "丈夫", "back": "丈夫 [zhàngfu]"}, {"front": "找", "back": "找 [zhǎo]"}, {"front": "着", "back": "着 [zhe]"}, {"front": "真", "back": "真 [zhēn]"}, {"front": "正在", "back": "正在 [zhèngzài]"}, {"front": "知道", "back": "知道 [zhīdào]"}, {"front": "准备", "back": "准备 [zhǔnbèi]"}, {"front": "走", "back": "走 [zǒu]"}, {"front": "最", "back": "最 [zuì]"}, {"front": "左边", "back": "左边 [zuǒbiān]"}, {"front": "晴", "back": "晴 [qíng]"}], "hsk3": [{"front": "阿姨", "back": "阿姨 [āyí]"}, {"front": "啊", "back": "啊 [a]"}, {"front": "矮", "back": "矮 [ǎi]"}, {"front": "爱好", "back": "爱好 [àihào]"}, {"front": "安静", "back": "安静 [ānjìng]"}, {"front": "把", "back": "把 [bǎ]"}, {"front": "班", "back": "班 [bān]"}, {"front": "搬", "back": "搬 [bān]"}, {"front": "办公室", "back": "办公室 [bàngōngshì]"}, {"front": "办法", "back": "办法 [bànfǎ]"}, {"front": "帮忙", "back": "帮忙 [bāngmáng]"}, {"front": "包", "back": "包 [bāo]"}, {"front": "北方", "back": "北方 [běifāng]"}, {"front": "被", "back": "被 [bèi]"}, {"front": "鼻子", "back": "鼻子 [bízi]"}, {"front": "笔记本", "back": "笔记本 [bǐjìběn]"}, {"front": "比较", "back": "比较 [bǐjiào]"}, {"front": "比赛", "back": "比赛 [bǐsài]"}, {"front": "必须", "back": "必须 [bìxū]"}, {"front": "变化", "back": "变化 [biànhuà]"}, {"front": "别人", "back": "别人 [biérén]"}, {"front": "不但..而且", "back": "不但..而且 [búdàn.. érqiě]"}, {"front": "冰箱", "back": "冰箱 [bīngxiāng]"}, {"front": "菜单", "back": "菜单 [càidān]"}, {"front": "草", "back": "草 [cǎo]"}, {"front": "差", "back": "差 [chà]"}, {"front": "参加", "back": "参加 [cānjiā]"}, {"front": "超市", "back": "超市 [chāoshì]"}, {"front": "衬衫", "back": "衬衫 [chènshān]"}, {"front": "成绩", "back": "成绩 [chéngjì]"}, {"front": "城市", "back": "城市 [chéngshì]"}, {"front": "迟到", "back": "迟到 [chídào]"}, {"front": "除了", "back": "除了 [chúle]"}, {"front": "船", "back": "船 [chuán]"}, {"front": "春", "back": "春 [chūn]"}, {"front": "词典", "back": "词典 [cídiǎn]"}, {"front": "聪明", "back": "聪明 [cōngmíng]"}, {"front": "打扫", "back": "打扫 [dǎsǎo]"}, {"front": "打算", "back": "打算 [dǎsuàn]"}, {"front": "带", "back": "带 [dài]"}, {"front": "担心", "back": "担心 [dānxīn]"}, {"front": "蛋糕", "back": "蛋糕 [dàngāo]"}, {"front": "当然", "back": "当然 [dāngrán]"}, {"front": "地", "back": "地 [de]"}, {"front": "灯", "back": "灯 [dēng]"}, {"front": "地铁", "back": "地铁 [dìtiě]"}, {"front": "地方", "back": "地方 [dìfang]"}, {"front": "地图", "back": "地图 [dìtú]"}, {"front": "电子邮件", "back": "电子邮件 [diànzǐ yóujiàn]"}, {"front": "电梯", "back": "电梯 [diàntī]"}, {"front": "东", "back": "东 [dōng]"}, {"front": "冬", "back": "冬 [dōng]"}, {"front": "动物", "back": "动物 [dòngwù]"}, {"front": "短", "back": "短 [duǎn]"}, {"front": "段", "back": "段 [duàn]"}, {"front": "锻炼", "back": "锻炼 [duànliàn]"}, {"front": "多么", "back": "多么 [duōme]"}, {"front": "饿", "back": "饿 [è]"}, {"front": "发", "back": "发 [fā]"}, {"front": "耳朵", "back": "耳朵 [ěrduo]"}, {"front": "发现", "back": "发现 [fāxiàn]"}, {"front": "发烧", "back": "发烧 [fāshāo]"}, {"front": "方便", "back": "方便 [fāngbiàn]"}, {"front": "放", "back": "放 [fàng]"}, {"front": "放心", "back": "放心 [fàngxīn]"}, {"front": "分", "back": "分 [fēn]"}, {"front": "附近", "back": "附近 [fùjìn]"}, {"front": "复习", "back": "复习 [fùxí]"}, {"front": "干净", "back": "干净 [gānjìng]"}, {"front": "感冒", "back": "感冒 [gǎnmào]"}, {"front": "感兴趣", "back": "感兴趣 [gǎnxìngqù]"}, {"front": "刚才", "back": "刚才 [gāngcái]"}, {"front": "个子", "back": "个子 [gèzi]"}, {"front": "跟", "back": "跟 [gēn]"}, {"front": "根据", "back": "根据 [gēnjù]"}, {"front": "更", "back": "更 [gèng]"}, {"front": "公斤", "back": "公斤 [gōngjīn]"}, {"front": "公园", "back": "公园 [gōngyuán]"}, {"front": "故事", "back": "故事 [gùshi]"}, {"front": "刮风", "back": "刮风 [guāfēng]"}, {"front": "关", "back": "关 [guān]"}, {"front": "玩儿", "back": "玩儿 [wánr]"}, {"front": "关心", "back": "关心 [guānxīn]"}, {"front": "关系", "back": "关系 [guānxi]"}, {"front": "关于", "back": "关于 [guānyú]"}, {"front": "国家", "back": "国家 [guójiā]"}, {"front": "过", "back": "过 [guo]"}, {"front": "还是", "back": "还是 [háishi]"}, {"front": "害怕", "back": "害怕 [hàipà]"}, {"front": "后来", "back": "后来 [hòulái]"}, {"front": "黑板", "back": "黑板 [hēibǎn]"}, {"front": "花", "back": "花 [huā]"}, {"front": "护照", "back": "护照 [hùzhào]"}, {"front": "过去", "back": "过去 [guòqù]"}, {"front": "画", "back": "画 [huà]"}, {"front": "坏", "back": "坏 [huài]"}, {"front": "欢迎", "back": "欢迎 [huānyíng]"}, {"front": "还", "back": "还 [huán]"}, {"front": "换", "back": "换 [huàn]"}, {"front": "环境", "back": "环境 [huánjìng]"}, {"front": "黄河", "back": "黄河 [Huánghé]"}, {"front": "回答", "back": "回答 [huídá]"}, {"front": "会议", "back": "会议 [huìyì]"}, {"front": "几乎", "back": "几乎 [jīhū]"}, {"front": "或者", "back": "或者 [huòzhě]"}, {"front": "机会", "back": "机会 [jīhuì]"}, {"front": "极", "back": "极 [jí]"}, {"front": "记得", "back": "记得 [jìde]"}, {"front": "检查", "back": "检查 [jiǎnchá]"}, {"front": "季节", "back": "季节 [jìjié]"}, {"front": "简单", "back": "简单 [jiǎndān]"}, {"front": "见面", "back": "见面 [jiànmiàn]"}, {"front": "健康", "back": "健康 [jiànkāng]"}, {"front": "讲", "back": "讲 [jiǎng]"}, {"front": "教", "back": "教 [jiāo]"}, {"front": "角", "back": "角 [jiǎo]"}, {"front": "脚", "back": "脚 [jiǎo]"}, {"front": "接", "back": "接 [jiē]"}, {"front": "街道", "back": "街道 [jiēdào]"}, {"front": "结婚", "back": "结婚 [jiéhūn]"}, {"front": "节目", "back": "节目 [jiémù]"}, {"front": "节日", "back": "节日 [jiérì]"}, {"front": "结束", "back": "结束 [jiéshù]"}, {"front": "解决", "back": "解决 [jiějué]"}, {"front": "借", "back": "借 [jiè]"}, {"front": "经常", "back": "经常 [jīngcháng]"}, {"front": "经过", "back": "经过 [jīngguò]"}, {"front": "经理", "back": "经理 [jīnglǐ]"}, {"front": "久", "back": "久 [jiǔ]"}, {"front": "旧", "back": "旧 [jiù]"}, {"front": "句子", "back": "句子 [jùzi]"}, {"front": "决定", "back": "决定 [juédìng]"}, {"front": "渴", "back": "渴 [kě]"}, {"front": "刻", "back": "刻 [kè]"}, {"front": "可爱", "back": "可爱 [kě'ài]"}, {"front": "客人", "back": "客人 [kèrén]"}, {"front": "空调", "back": "空调 [kōngtiáo]"}, {"front": "口", "back": "口 [kǒu]"}, {"front": "哭", "back": "哭 [kū]"}, {"front": "筷子", "back": "筷子 [kuàizi]"}, {"front": "裤子", "back": "裤子 [kùzi]"}, {"front": "蓝", "back": "蓝 [lán]"}, {"front": "老", "back": "老 [lǎo]"}, {"front": "离开", "back": "离开 [líkāi]"}, {"front": "礼物", "back": "礼物 [lǐwù]"}, {"front": "历史", "back": "历史 [lìshǐ]"}, {"front": "脸", "back": "脸 [liǎn]"}, {"front": "练习", "back": "练习 [liànxí]"}, {"front": "辆", "back": "辆 [liàng]"}, {"front": "聊天", "back": "聊天 [liáotiān]"}, {"front": "了解", "back": "了解 [liǎojiě]"}, {"front": "留学", "back": "留学 [liúxué]"}, {"front": "邻居", "back": "邻居 [línjū]"}, {"front": "楼", "back": "楼 [lóu]"}, {"front": "绿", "back": "绿 [lǜ]"}, {"front": "马", "back": "马 [mǎ]"}, {"front": "马上", "back": "马上 [mǎshàng]"}, {"front": "满意", "back": "满意 [mǎnyì]"}, {"front": "帽子", "back": "帽子 [màozi]"}, {"front": "米", "back": "米 [mǐ]"}, {"front": "面包", "back": "面包 [miànbāo]"}, {"front": "明白", "back": "明白 [míngbai]"}, {"front": "拿", "back": "拿 [ná]"}, {"front": "奶奶", "back": "奶奶 [nǎinai]"}, {"front": "南", "back": "南 [nán]"}, {"front": "难", "back": "难 [nán]"}, {"front": "难过", "back": "难过 [nánguò]"}, {"front": "年级", "back": "年级 [niánjí]"}, {"front": "年轻", "back": "年轻 [niánqīng]"}, {"front": "努力", "back": "努力 [nǔlì]"}, {"front": "鸟", "back": "鸟 [niǎo]"}, {"front": "爬山", "back": "爬山 [pá shān]"}, {"front": "盘子", "back": "盘子 [pánzi]"}, {"front": "胖", "back": "胖 [pàng]"}, {"front": "啤酒", "back": "啤酒 [píjiǔ]"}, {"front": "皮鞋", "back": "皮鞋 [píxié]"}, {"front": "瓶子", "back": "瓶子 [píngzi]"}, {"front": "骑", "back": "骑 [qí]"}, {"front": "其他", "back": "其他 [qítā]"}, {"front": "奇怪", "back": "奇怪 [qíguài]"}, {"front": "其实", "back": "其实 [qíshí]"}, {"front": "起飞", "back": "起飞 [qǐfēi]"}, {"front": "起来", "back": "起来 [qǐlái]"}, {"front": "清楚", "back": "清楚 [qīngchu]"}, {"front": "请假", "back": "请假 [qǐngjià]"}, {"front": "秋", "back": "秋 [qiū]"}, {"front": "裙子", "back": "裙子 [qúnzi]"}, {"front": "然后", "back": "然后 [ránhòu]"}, {"front": "热情", "back": "热情 [rèqíng]"}, {"front": "认为", "back": "认为 [rènwéi]"}, {"front": "认真", "back": "认真 [rènzhēn]"}, {"front": "容易", "back": "容易 [róngyì]"}, {"front": "如果", "back": "如果 [rúguǒ]"}, {"front": "伞", "back": "伞 [sǎn]"}, {"front": "上网", "back": "上网 [shàngwǎng]"}, {"front": "生气", "back": "生气 [shēngqì]"}, {"front": "声音", "back": "声音 [shēngyīn]"}, {"front": "试", "back": "试 [shì]"}, {"front": "世界", "back": "世界 [shìjiè]"}, {"front": "瘦", "back": "瘦 [shòu]"}, {"front": "舒服", "back": "舒服 [shūfu]"}, {"front": "叔叔", "back": "叔叔 [shūshu]"}, {"front": "树", "back": "树 [shù]"}, {"front": "数学", "back": "数学 [shùxué]"}, {"front": "刷牙", "back": "刷牙 [shuāyá]"}, {"front": "双", "back": "双 [shuāng]"}, {"front": "水平", "back": "水平 [shuǐpíng]"}, {"front": "太阳", "back": "太阳 [tàiyáng]"}, {"front": "司机", "back": "司机 [sījī]"}, {"front": "特别", "back": "特别 [tèbié]"}, {"front": "疼", "back": "疼 [téng]"}, {"front": "提高", "back": "提高 [tígāo]"}, {"front": "体育", "back": "体育 [tǐyù]"}, {"front": "甜", "back": "甜 [tián]"}, {"front": "条", "back": "条 [tiáo]"}, {"front": "同事", "back": "同事 [tóngshì]"}, {"front": "同意", "back": "同意 [tóngyì]"}, {"front": "头发", "back": "头发 [tóufa]"}, {"front": "突然", "back": "突然 [tūrán]"}, {"front": "图书馆", "back": "图书馆 [túshūguǎn]"}, {"front": "腿", "back": "腿 [tuǐ]"}, {"front": "完成", "back": "完成 [wánchéng]"}, {"front": "碗", "back": "碗 [wǎn]"}, {"front": "万", "back": "万 [wàn]"}, {"front": "忘记", "back": "忘记 [wàngjì]"}, {"front": "为", "back": "为 [wèi]"}, {"front": "为了", "back": "为了 [wèile]"}, {"front": "位", "back": "位 [wèi]"}, {"front": "文化", "back": "文化 [wénhuà]"}, {"front": "西", "back": "西 [xī]"}, {"front": "习惯", "back": "习惯 [xíguàn]"}, {"front": "洗手间", "back": "洗手间 [xǐshǒujiān]"}, {"front": "洗澡", "back": "洗澡 [xǐzǎo]"}, {"front": "夏", "back": "夏 [xià]"}, {"front": "先", "back": "先 [xiān]"}, {"front": "香蕉", "back": "香蕉 [xiāngjiāo]"}, {"front": "相信", "back": "相信 [xiāngxìn]"}, {"front": "向", "back": "向 [xiàng]"}, {"front": "像", "back": "像 [xiàng]"}, {"front": "小心", "back": "小心 [xiǎoxīn]"}, {"front": "校长", "back": "校长 [xiàozhǎng]"}, {"front": "新鲜", "back": "新鲜 [xīnxiān]"}, {"front": "新闻", "back": "新闻 [xīnwén]"}, {"front": "信用卡", "back": "信用卡 [xìnyòngkǎ]"}, {"front": "行李箱", "back": "行李箱 [xínglixiāng]"}, {"front": "熊猫", "back": "熊猫 [xióngmāo]"}, {"front": "需要", "back": "需要 [xūyào]"}, {"front": "选择", "back": "选择 [xuǎnzé]"}, {"front": "要求", "back": "要求 [yāoqiú]"}, {"front": "爷爷", "back": "爷爷 [yéye]"}, {"front": "一定", "back": "一定 [yídìng]"}, {"front": "一共", "back": "一共 [yígòng]"}, {"front": "一会儿", "back": "一会儿 [yīhuìr]"}, {"front": "一样", "back": "一样 [yīyàng]"}, {"front": "一般", "back": "一般 [yībān]"}, {"front": "一边", "back": "一边 [yībiān]"}, {"front": "一直", "back": "一直 [yīzhí]"}, {"front": "以前", "back": "以前 [yǐqián]"}, {"front": "音乐", "back": "音乐 [yīnyuè]"}, {"front": "银行", "back": "银行 [yínháng]"}, {"front": "饮料", "back": "饮料 [yǐnliào]"}, {"front": "应该", "back": "应该 [yīnggāi]"}, {"front": "影响", "back": "影响 [yǐngxiǎng]"}, {"front": "用", "back": "用 [yòng]"}, {"front": "游戏", "back": "游戏 [yóuxì]"}, {"front": "有名", "back": "有名 [yǒumíng]"}, {"front": "又", "back": "又 [yòu]"}, {"front": "遇到", "back": "遇到 [yùdào]"}, {"front": "元", "back": "元 [yuán]"}, {"front": "愿意", "back": "愿意 [yuànyì]"}, {"front": "越", "back": "越 [yuè]"}, {"front": "月亮", "back": "月亮 [yuèliang]"}, {"front": "站", "back": "站 [zhàn]"}, {"front": "张", "back": "张 [zhāng]"}, {"front": "长", "back": "长 [zhǎng]"}, {"front": "着急", "back": "着急 [zháojí]"}, {"front": "照顾", "back": "照顾 [zhàogù]"}, {"front": "照相机", "back": "照相机 [zhàoxiàngjī]"}, {"front": "照片", "back": "照片 [zhàopiàn]"}, {"front": "只", "back": "只 [zhǐ]"}, {"front": "只有..才..", "back": "只有..才.. [zhǐyǒu cái]"}, {"front": "中间", "back": "中间 [zhōngjiān]"}, {"front": "终于", "back": "终于 [zhōngyú]"}, {"front": "种", "back": "种 [zhǒng]"}, {"front": "重要", "back": "重要 [zhòngyào]"}, {"front": "周末", "back": "周末 [zhōumò]"}, {"front": "主要", "back": "主要 [zhǔyào]"}, {"front": "注意", "back": "注意 [zhùyì]"}, {"front": "自己", "back": "自己 [zìjǐ]"}, {"front": "自行车", "back": "自行车 [zìxíngchē]"}, {"front": "总是", "back": "总是 [zǒngshì]"}, {"front": "嘴", "back": "嘴 [zuǐ]"}, {"front": "最后", "back": "最后 [zuìhòu]"}, {"front": "最近", "back": "最近 [zuìjìn]"}, {"front": "作业", "back": "作业 [zuòyè]"}, {"front": "中文", "back": "中文 [Zhōngwén]"}, {"front": "饱", "back": "饱 [bǎo]"}, {"front": "半", "back": "半 [bàn]"}, {"front": "层", "back": "层 [céng]"}, {"front": "花", "back": "花 [huā]"}]};
-
-let level = 'hsk1';
-let deck = [];
-let idx = 0;
-let flipped = false;
-
+const RAW = {"hsk1": [{"front": "爱", "back": "爱 [ài]", "example": "我爱我的家人。"}, {"front": "八", "back": "八 [bā]", "example": "他儿子今年八岁了。"}, {"front": "爸爸", "back": "爸爸 [bàba]", "example": "我爸爸是医生。"}, {"front": "杯子", "back": "杯子 [bēizi]", "example": "杯子里有茶。"}, {"front": "北京", "back": "北京 [Běijīng]", "example": "我住在北京。"}, {"front": "本", "back": "本 [běn]", "example": "桌子上有一本书。"}, {"front": "不", "back": "不 [bù]", "example": "我不是学生。"}, {"front": "不客气", "back": "不客气 [búkèqi]", "example": "甲:谢谢你！乙:不客气。"}, {"front": "菜", "back": "菜 [cài]", "example": "今天我做了三个菜。"}, {"front": "茶", "back": "茶 [chá]", "example": "请喝杯茶吧。"}, {"front": "吃", "back": "吃 [chī]", "example": "请吃点儿米饭。"}, {"front": "出租车", "back": "出租车 [chūzūchē]", "example": "我们坐出租车去火车站。"}, {"front": "大", "back": "大 [dà]", "example": "这个苹果很大。"}, {"front": "打电话", "back": "打电话 [dǎ diànhuà]", "example": "他在打电话呢。"}, {"front": "的", "back": "的 [de]", "example": "这是我的书。"}, {"front": "点", "back": "点 [diǎn]", "example": "现在是下午3点20。"}, {"front": "电脑", "back": "电脑 [diànnǎo]", "example": "我买了个电脑。"}, {"front": "电视", "back": "电视 [diànshì]", "example": "妈妈在看电视。"}, {"front": "电影", "back": "电影 [diànyǐng]", "example": "我喜欢看电影。"}, {"front": "东西", "back": "东西 [dōngxi]", "example": "我在商店买了很多东西。"}, {"front": "都", "back": "都 [dōu]", "example": "我们都来了。"}, {"front": "读", "back": "读 [dú]", "example": "你喜欢读书吗？"}, {"front": "对不起", "back": "对不起 [duìbuqǐ]", "example": "甲:对不起。乙:没关系。"}, {"front": "多", "back": "多 [duō]", "example": "这里的人很多。"}, {"front": "多少", "back": "多少 [duōshao]", "example": "你们学校有多少学生？"}, {"front": "儿子", "back": "儿子 [érzi]", "example": "我儿子三岁了。"}, {"front": "二", "back": "二 [èr]", "example": "现在十二点了。"}, {"front": "饭店", "back": "饭店 [fàndiàn]", "example": "我们去饭店吃饭吧。"}, {"front": "飞机", "back": "飞机 [fēijī]", "example": "我坐飞机去北京。"}, {"front": "分钟", "back": "分钟 [fēnzhōng]", "example": "我想休息几分钟。"}, {"front": "高兴", "back": "高兴 [gāoxìng]", "example": "今天我很高兴。"}, {"front": "个", "back": "个 [gè][ge]", "example": "我是一个学生。"}, {"front": "工作", "back": "工作 [gōngzuò]", "example": "爸爸每天很努力地工作。"}, {"front": "狗", "back": "狗 [gǒu]", "example": "女儿很喜欢小狗。"}, {"front": "汉语", "back": "汉语 [Hànyǔ]", "example": "他在学习汉语。"}, {"front": "好", "back": "好 [hǎo]", "example": "今天天气很好。"}, {"front": "号", "back": "号 [hào]", "example": "今天是1月1号。"}, {"front": "喝", "back": "喝 [hē]", "example": "我想喝水。"}, {"front": "很", "back": "很 [hěn]", "example": "今天天气很好。"}, {"front": "后面", "back": "后面 [hòumiàn]", "example": "商店在学校后面。"}, {"front": "回", "back": "回 [huí]", "example": "我八点回家。"}, {"front": "会", "back": "会 [huì]", "example": "我会开车。"}, {"front": "几", "back": "几 [jǐ]", "example": "你有几个儿子？"}, {"front": "家", "back": "家 [jiā]", "example": "我家在北京。"}, {"front": "叫", "back": "叫 [jiào]", "example": "我的名字叫李明。"}, {"front": "今天", "back": "今天 [jīntiān]", "example": "我今天去北京。"}, {"front": "九", "back": "九 [jiǔ]", "example": "今天是八月九日。"}, {"front": "开", "back": "开 [kāi]", "example": "请开门，让我进去。"}, {"front": "看", "back": "看 [kàn]", "example": "我在看书呢。"}, {"front": "看见", "back": "看见 [kànjiàn]", "example": "我没看见他。"}, {"front": "块", "back": "块 [kuài]", "example": "这本书三十块钱。"}, {"front": "来", "back": "来 [lái]", "example": "他是昨天来这儿的。"}, {"front": "老师", "back": "老师 [lǎoshī]", "example": "他就是我们的汉语老师。"}, {"front": "了", "back": "了 [le]", "example": "昨天下雨了。"}, {"front": "冷", "back": "冷 [lěng]", "example": "今天太冷了。"}, {"front": "里", "back": "里 [lǐ]", "example": "我们都在学校里。"}, {"front": "六", "back": "六 [liù]", "example": "桌子上有六个杯子。"}, {"front": "妈妈", "back": "妈妈 [māma]", "example": "我妈妈不在家。"}, {"front": "吗", "back": "吗 [ma]", "example": "你是中国人吗？"}, {"front": "买", "back": "买 [mǎi]", "example": "我买了一些苹果。"}, {"front": "猫", "back": "猫 [māo]", "example": "你的小猫去哪儿了？"}, {"front": "没关系", "back": "没关系 [méi guānxi]", "example": "甲:对不起！乙:没关系。"}, {"front": "没有", "back": "没有 [méiyǒu]", "example": "屋里没有人。"}, {"front": "米饭", "back": "米饭 [mǐfàn]", "example": "我爱吃米饭。"}, {"front": "名字", "back": "名字 [míngzi]", "example": "我的名字叫李明。"}, {"front": "明天", "back": "明天 [míngtiān]", "example": "今天星期日，明天是星期一。"}, {"front": "哪", "back": "哪 [nǎ]", "example": "哪个杯子是你的？"}, {"front": "哪儿", "back": "哪儿 [nǎr]", "example": "你家在哪儿？"}, {"front": "那", "back": "那 [nà]", "example": "我不认识那个人。"}, {"front": "呢", "back": "呢 [ne]", "example": "我在睡觉呢。"}, {"front": "能", "back": "能 [néng]", "example": "我能坐在这儿吗？"}, {"front": "你", "back": "你 [nǐ]", "example": "你认识这个人吗？"}, {"front": "年", "back": "年 [nián]", "example": "我在中国住了三年。"}, {"front": "女儿", "back": "女儿 [nǚ'ér]", "example": "我有两个女儿。"}, {"front": "朋友", "back": "朋友 [péngyou]", "example": "他是我的好朋友。"}, {"front": "漂亮", "back": "漂亮 [piàoliang]", "example": "你的衣服真漂亮。"}, {"front": "苹果", "back": "苹果 [píngguǒ]", "example": "你想不想吃个苹果？"}, {"front": "七", "back": "七 [qī]", "example": "一个星期有七天。"}, {"front": "钱", "back": "钱 [qián]", "example": "一个苹果三块钱。"}, {"front": "前面", "back": "前面 [qiánmiàn]", "example": "学校前面有一家商店。"}, {"front": "请", "back": "请 [qǐng]", "example": "他想请我吃饭。"}, {"front": "去", "back": "去 [qù]", "example": "我们去图书馆看书吧。"}, {"front": "热", "back": "热 [rè]", "example": "今天很热。"}, {"front": "人", "back": "人 [rén]", "example": "商店里有很多人。"}, {"front": "认识", "back": "认识 [rènshi]", "example": "很高兴认识你。"}, {"front": "三", "back": "三 [sān]", "example": "我有三本书。"}, {"front": "商店", "back": "商店 [shāngdiàn]", "example": "她去商店买东西了。"}, {"front": "上", "back": "上 [shàng]", "example": "书在桌子上。"}, {"front": "少", "back": "少 [shǎo]", "example": "杯子里的水很少。"}, {"front": "上午", "back": "上午 [shàngwǔ]", "example": "现在是上午10点。"}, {"front": "谁", "back": "谁 [shéi]", "example": "那个人是谁？"}, {"front": "什么", "back": "什么 [shénme]", "example": "你看见了什么？"}, {"front": "十", "back": "十 [shí]", "example": "现在是十月。"}, {"front": "时候", "back": "时候 [shíhou]", "example": "我回家的时候，他在睡觉。"}, {"front": "是", "back": "是 [shì]", "example": "他不是学生。"}, {"front": "书", "back": "书 [shū]", "example": "我喜欢读书。"}, {"front": "水", "back": "水 [shuǐ]", "example": "杯子里还有水吗？"}, {"front": "水果", "back": "水果 [shuǐguǒ]", "example": "我想去商店买水果。"}, {"front": "睡觉", "back": "睡觉 [shuìjiào]", "example": "儿子在睡觉呢。"}, {"front": "说", "back": "说 [shuō]", "example": "你在说什么？"}, {"front": "四", "back": "四 [sì]", "example": "我们四个人去看电影。"}, {"front": "岁", "back": "岁 [suì]", "example": "李医生今年40岁。"}, {"front": "他", "back": "他 [tā]", "example": "他是我们的老师。"}, {"front": "她", "back": "她 [tā]", "example": "我认识她的妈妈。"}, {"front": "太", "back": "太 [tài]", "example": "这个学校太大了。"}, {"front": "天气", "back": "天气 [tiānqì]", "example": "今天的天气非常好。"}, {"front": "听", "back": "听 [tīng]", "example": "你听，谁来了？"}, {"front": "同学", "back": "同学 [tóngxué]", "example": "同学们，你们好！"}, {"front": "喂", "back": "喂 [wèi]", "example": "喂，李老师在吗？"}, {"front": "我", "back": "我 [wǒ]", "example": "我是一个学生。"}, {"front": "我们", "back": "我们 [wǒmen]", "example": "我们都是学生。"}, {"front": "五", "back": "五 [wǔ]", "example": "今天星期五。"}, {"front": "喜欢", "back": "喜欢 [xǐhuan]", "example": "我喜欢学汉语。"}, {"front": "下", "back": "下 [xià]", "example": "猫在桌子下面。"}, {"front": "下午", "back": "下午 [xiàwǔ]", "example": "我今天下午不去学校了。"}, {"front": "下雨", "back": "下雨 [xiàyǔ]", "example": "昨天下雨了。"}, {"front": "先生", "back": "先生 [xiānsheng]", "example": "你也认识王先生？"}, {"front": "现在", "back": "现在 [xiànzài]", "example": "现在是12点。"}, {"front": "想", "back": "想 [xiǎng]", "example": "我想星期六去北京。"}, {"front": "小", "back": "小 [xiǎo]", "example": "这个苹果太小了。"}, {"front": "小姐", "back": "小姐 [xiǎojie]", "example": "小姐，你叫什么名字？"}, {"front": "些", "back": "些 [xiē]", "example": "我买了些苹果。"}, {"front": "写", "back": "写 [xiě]", "example": "你写的字很漂亮。"}, {"front": "谢谢", "back": "谢谢 [xièxie]", "example": "甲:谢谢你。乙:不客气！"}, {"front": "星期", "back": "星期 [xīngqī]", "example": "一个星期有七天。"}, {"front": "学生", "back": "学生 [xuésheng]", "example": "我们学校里的学生很多。"}, {"front": "学习", "back": "学习 [xuéxí]", "example": "你喜欢学习汉语吗？"}, {"front": "学校", "back": "学校 [xuéxiào]", "example": "我们学校很大。"}, {"front": "一", "back": "一 [yī]", "example": "这儿一个人都没有。"}, {"front": "一点儿", "back": "一点儿 [yīdiǎnr]", "example": "我只有一点儿钱。"}, {"front": "衣服", "back": "衣服 [yīfu]", "example": "我在商店买了很多衣服。"}, {"front": "医生", "back": "医生 [yīshēng]", "example": "他是这个医院里的医生。"}, {"front": "医院", "back": "医院 [yīyuàn]", "example": "这是一个大医院。"}, {"front": "椅子", "back": "椅子 [yǐzi]", "example": "小狗在椅子下面呢。"}, {"front": "有", "back": "有 [yǒu]", "example": "我有一个女儿。"}, {"front": "月", "back": "月 [yuè]", "example": "一年有12个月。"}, {"front": "在", "back": "在 [zài]", "example": "书在桌子上。"}, {"front": "再见", "back": "再见 [zàijiàn]", "example": "妈妈，我去学校了，再见。"}, {"front": "怎么", "back": "怎么 [zěnme]", "example": "你怎么去北京？"}, {"front": "这", "back": "这 [zhè]", "example": "这是我的书。"}, {"front": "中国", "back": "中国 [Zhōngguó]", "example": "我在中国学汉语。"}, {"front": "中午", "back": "中午 [zhōngwǔ]", "example": "我今天中午去火车站。"}, {"front": "住", "back": "住 [zhù]", "example": "他在北京住了很多年。"}, {"front": "桌子", "back": "桌子 [zhuōzi]", "example": "电脑在桌子上。"}, {"front": "字", "back": "字 [zì]", "example": "这个字你认识吗？"}, {"front": "昨天", "back": "昨天 [zuótiān]", "example": "他昨天没去学校。"}, {"front": "坐", "back": "坐 [zuò]", "example": "我坐飞机去中国。"}, {"front": "做", "back": "做 [zuò]", "example": "妈妈在厨房做饭。"}, {"front": "和", "back": "和 [hé]", "example": "爸爸和妈妈都在家。"}, {"front": "怎么样", "back": "怎么样 [zěnmeyàng]", "example": "我们去看电影，怎么样？"}], "hsk2": [{"front": "吧", "back": "吧 [ba]", "example": "你是个学生吧？"}, {"front": "白", "back": "白 [bái]", "example": "我很爱穿那件白衣服。"}, {"front": "百", "back": "百 [bǎi]", "example": "这个自行车五百多元。"}, {"front": "帮助", "back": "帮助 [bāngzhù]", "example": "他帮助我学习汉语。"}, {"front": "报纸", "back": "报纸 [bàozhǐ]", "example": "我每天早上都要读报纸。"}, {"front": "比", "back": "比 [bǐ]", "example": "我的孩子比我高。"}, {"front": "别", "back": "别 [bié]", "example": "太晚了，别看电视了。"}, {"front": "宾馆", "back": "宾馆 [bīnguǎn]", "example": "这是我们这儿最大的宾馆。"}, {"front": "长", "back": "长 [cháng]", "example": "这条路很长。"}, {"front": "唱歌", "back": "唱歌 [chànggē]", "example": "我最爱唱歌了，我给你们唱一个。"}, {"front": "出", "back": "出 [chū]", "example": "我已经走出火车站了。"}, {"front": "穿", "back": "穿 [chuān]", "example": "天冷了，多穿些衣服吧。"}, {"front": "次", "back": "次 [cì]", "example": "我去过一次北京。"}, {"front": "从", "back": "从 [cóng]", "example": "从我家到公司，开车要20分钟。"}, {"front": "错", "back": "错 [cuò]", "example": "对不起，我错了。"}, {"front": "打篮球", "back": "打篮球 [dǎ lánqiú]", "example": "我每天下午都去打篮球。"}, {"front": "大家", "back": "大家 [dàjiā]", "example": "大家好，我是新来的学生。"}, {"front": "到", "back": "到 [dào]", "example": "我早上9点到公司。"}, {"front": "得", "back": "得 [dé]", "example": "你走得太快了。"}, {"front": "等", "back": "等 [děng]", "example": "你还要再等我10分钟。"}, {"front": "弟弟", "back": "弟弟 [dìdi]", "example": "我有一个弟弟。"}, {"front": "第一", "back": "第一 [dìyī]", "example": "这是我第一次见到他。"}, {"front": "懂", "back": "懂 [dǒng]", "example": "你的意思我懂了。"}, {"front": "对", "back": "对 [duì]", "example": "你是对的，我错了。"}, {"front": "房间", "back": "房间 [fángjiān]", "example": "我们两个人住一个房间。"}, {"front": "非常", "back": "非常 [fēicháng]", "example": "奶奶非常喜欢我们送的礼物。"}, {"front": "服务员", "back": "服务员 [fúwùyuán]", "example": "服务员，请给我拿菜单。"}, {"front": "高", "back": "高 [gāo]", "example": "我比爸爸还高。"}, {"front": "告诉", "back": "告诉 [gàosu]", "example": "请告诉我你的名字。"}, {"front": "哥哥", "back": "哥哥 [gēge]", "example": "我哥哥比我大三岁。"}, {"front": "给", "back": "给 [gěi]", "example": "请把这本书给他。"}, {"front": "公共汽车", "back": "公共汽车 [gōnggòng qìchē]", "example": "坐公共汽车去，要20分钟。"}, {"front": "公司", "back": "公司 [gōngsī]", "example": "我在一个公司上班。"}, {"front": "贵", "back": "贵 [guì]", "example": "这块手表很贵。"}, {"front": "过", "back": "过 [guo]", "example": "我去过中国。"}, {"front": "还", "back": "还 [hái]", "example": "他还没吃饭呢。"}, {"front": "孩子", "back": "孩子 [háizi]", "example": "我有三个孩子。"}, {"front": "好吃", "back": "好吃 [hǎochī]", "example": "您做的米饭真好吃。"}, {"front": "黑", "back": "黑 [hēi]", "example": "我不喜欢黑颜色的衣服。"}, {"front": "红", "back": "红 [hóng]", "example": "我的自行车是红色的。"}, {"front": "火车站", "back": "火车站 [huǒchēzhàn]", "example": "我下午3点去火车站。"}, {"front": "机场", "back": "机场 [jīchǎng]", "example": "我去机场接朋友。"}, {"front": "鸡蛋", "back": "鸡蛋 [jīdàn]", "example": "我每天早上都要吃个鸡蛋。"}, {"front": "件", "back": "件 [jiàn]", "example": "我买了一件新衣服。"}, {"front": "教室", "back": "教室 [jiàoshì]", "example": "同学们都在教室里上课。"}, {"front": "姐姐", "back": "姐姐 [jiějie]", "example": "我有两个姐姐。"}, {"front": "介绍", "back": "介绍 [jièshào]", "example": "我来介绍一下我的朋友。"}, {"front": "进", "back": "进 [jìn]", "example": "请进来，坐下吧。"}, {"front": "近", "back": "近 [jìn]", "example": "我们家离公司很近。"}, {"front": "就", "back": "就 [jiù]", "example": "我一到家就给他打电话。"}, {"front": "觉得", "back": "觉得 [juéde]", "example": "你觉得这本书怎么样？"}, {"front": "咖啡", "back": "咖啡 [kāfēi]", "example": "您想喝咖啡，还是茶？"}, {"front": "开始", "back": "开始 [kāishǐ]", "example": "电影开始了，我们快进去吧。"}, {"front": "考试", "back": "考试 [kǎoshì]", "example": "明天有汉语考试，我要好好复习。"}, {"front": "可能", "back": "可能 [kěnéng]", "example": "我可能不能去上班了。"}, {"front": "可以", "back": "可以 [kěyǐ]", "example": "你可以开我的车去上班。"}, {"front": "课", "back": "课 [kè]", "example": "今天我们学习第一课。"}, {"front": "快", "back": "快 [kuài]", "example": "他跑得真快。"}, {"front": "快乐", "back": "快乐 [kuàilè]", "example": "祝你生日快乐！"}, {"front": "累", "back": "累 [lèi]", "example": "我累了，想休息。"}, {"front": "离", "back": "离 [lí]", "example": "我家离学校很近。"}, {"front": "两", "back": "两 [liǎng]", "example": "苹果两块钱一斤。"}, {"front": "零", "back": "零 [líng]", "example": "这件衬衫三十零五元。"}, {"front": "路", "back": "路 [lù]", "example": "这条路很宽。"}, {"front": "旅游", "back": "旅游 [lǚyóu]", "example": "我们去云南旅游了。"}, {"front": "卖", "back": "卖 [mài]", "example": "这家商店卖很多东西。"}, {"front": "慢", "back": "慢 [màn]", "example": "我们走得很慢。"}, {"front": "忙", "back": "忙 [máng]", "example": "这个星期，我很忙。"}, {"front": "每", "back": "每 [měi]", "example": "我每天都去跑步。"}, {"front": "妹妹", "back": "妹妹 [mèimei]", "example": "我有两个妹妹。"}, {"front": "面条", "back": "面条 [miàntiáo]", "example": "服务员，我要一碗面条。"}, {"front": "门", "back": "门 [mén]", "example": "我在门外等你。"}, {"front": "男", "back": "男 [nán]", "example": "我不认识那个男人。"}, {"front": "您", "back": "您 [nín]", "example": "老师，您好！"}, {"front": "牛奶", "back": "牛奶 [niúnǎi]", "example": "睡觉前喝杯牛奶吧。"}, {"front": "女", "back": "女 [nǚ]", "example": "她是一个女学生。"}, {"front": "旁边", "back": "旁边 [pángbiān]", "example": "爸爸在我旁边。"}, {"front": "跑步", "back": "跑步 [pǎobù]", "example": "我每天早上都跑步。"}, {"front": "便宜", "back": "便宜 [piányi]", "example": "苹果很便宜，我们买点儿吧。"}, {"front": "票", "back": "票 [piào]", "example": "我要去火车站买车票。"}, {"front": "妻子", "back": "妻子 [qīzi]", "example": "我妻子上班去了。"}, {"front": "起床", "back": "起床 [qǐchuáng]", "example": "我早上七点起床。"}, {"front": "千", "back": "千 [qiān]", "example": "这个手机一千元。"}, {"front": "铅笔", "back": "铅笔 [qiānbǐ]", "example": "你看见我的铅笔了吗？"}, {"front": "请", "back": "请 [qǐng]", "example": "他想请我吃饭。"}, {"front": "去年", "back": "去年 [qùnián]", "example": "我是去年8月来北京的。"}, {"front": "让", "back": "让 [ràng]", "example": "他爸爸不让他来。"}, {"front": "日", "back": "日 [rì]", "example": "今天是2012年2月26日。"}, {"front": "上班", "back": "上班 [shàngbān]", "example": "我七点半去上班。"}, {"front": "身体", "back": "身体 [shēntǐ]", "example": "今天我的身体不太舒服。"}, {"front": "生病", "back": "生病 [shēngbìng]", "example": "我生病了，不能去上班了。"}, {"front": "生日", "back": "生日 [shēngrì]", "example": "祝你生日快乐！"}, {"front": "时间", "back": "时间 [shíjiān]", "example": "我没时间去北京。"}, {"front": "事情", "back": "事情 [shìqing]", "example": "你下午有什么事情吗？"}, {"front": "手机", "back": "手机 [shǒujī]", "example": "你看，我新买了一个手机。"}, {"front": "手表", "back": "手表 [shǒubiǎo]", "example": "这块手表非常漂亮。"}, {"front": "说话", "back": "说话 [shuōhuà]", "example": "他们在说话。"}, {"front": "送", "back": "送 [sòng]", "example": "我送你一本书。"}, {"front": "虽然..但是..", "back": "虽然..但是.. [suīrán.. dànshì...]", "example": "虽然下雨了，但是我们还是想去看电影。"}, {"front": "它", "back": "它 [tā]", "example": "我知道小猫在哪儿，它在桌子下面。"}, {"front": "踢足球", "back": "踢足球 [tīzúqiú]", "example": "我和同学们在踢足球。"}, {"front": "题", "back": "题 [tí]", "example": "这个题我不会做。"}, {"front": "跳舞", "back": "跳舞 [tiàowǔ]", "example": "妹妹会唱歌，也会跳舞。"}, {"front": "外", "back": "外 [wài]", "example": "外面下雨了。"}, {"front": "完", "back": "完 [wán]", "example": "这本书我看完了。"}, {"front": "玩", "back": "玩 [wán]", "example": "他在玩，没有学习。"}, {"front": "晚上", "back": "晚上 [wǎnshang]", "example": "今天晚上我不能看电视了。"}, {"front": "往", "back": "往 [wǎng]", "example": "再往前走500米就到了。"}, {"front": "为什么", "back": "为什么 [wèishénme]", "example": "你为什么不喝点儿水呢？"}, {"front": "问", "back": "问 [wèn]", "example": "老师，我可以问你一个问题吗？"}, {"front": "问题", "back": "问题 [wèntí]", "example": "这个问题太难了！"}, {"front": "西瓜", "back": "西瓜 [xīguā]", "example": "请吃块儿西瓜。"}, {"front": "希望", "back": "希望 [xīwàng]", "example": "我希望你别走了。"}, {"front": "洗", "back": "洗 [xǐ]", "example": "今天我要洗很多衣服。"}, {"front": "小时", "back": "小时 [xiǎoshí]", "example": "我看了一小时的书。"}, {"front": "笑", "back": "笑 [xiào]", "example": "她笑了，很开心。"}, {"front": "新", "back": "新 [xīn]", "example": "这是我买的新衣服。"}, {"front": "姓", "back": "姓 [xìng]", "example": "我姓张。"}, {"front": "休息", "back": "休息 [xiūxi]", "example": "太累了，让我休息一下。"}, {"front": "雪", "back": "雪 [xuě]", "example": "今年冬天下了几次大雪。"}, {"front": "颜色", "back": "颜色 [yánsè]", "example": "你喜欢哪种颜色？"}, {"front": "眼睛", "back": "眼睛 [yǎnjing]", "example": "我的眼睛是黑色的。"}, {"front": "羊肉", "back": "羊肉 [yángròu]", "example": "有些人不爱吃羊肉。"}, {"front": "药", "back": "药 [yào]", "example": "这个药一天吃三次。"}, {"front": "要", "back": "要 [yào]", "example": "我要去北京。"}, {"front": "也", "back": "也 [yě]", "example": "你去，我也去。"}, {"front": "一下", "back": "一下 [yīxià]", "example": "请等我一下。"}, {"front": "一起", "back": "一起 [yīqǐ]", "example": "我和你一起去北京。"}, {"front": "已经", "back": "已经 [yǐjing]", "example": "我们已经吃完饭了。"}, {"front": "意思", "back": "意思 [yìsi]", "example": "这个词是什么意思？"}, {"front": "阴", "back": "阴 [yīn]", "example": "今天是阴天。"}, {"front": "因为..所以", "back": "因为..所以 [yīnwèi suǒyǐ]", "example": "因为下雨了，所以我没去跑步。"}, {"front": "游泳", "back": "游泳 [yóuyǒng]", "example": "夏天我喜欢去游泳。"}, {"front": "右边", "back": "右边 [yòubiān]", "example": "王医生右边那个人是谁？"}, {"front": "鱼", "back": "鱼 [yú]", "example": "水里有很多鱼。"}, {"front": "远", "back": "远 [yuǎn]", "example": "我家离公司很远。"}, {"front": "运动", "back": "运动 [yùndòng]", "example": "我们都很喜欢运动。"}, {"front": "再", "back": "再 [zài]", "example": "我吃完饭再去商店。"}, {"front": "早上", "back": "早上 [zǎoshang]", "example": "我每天早上七点起床。"}, {"front": "丈夫", "back": "丈夫 [zhàngfu]", "example": "我丈夫在医院工作。"}, {"front": "找", "back": "找 [zhǎo]", "example": "我在找我的手机。"}, {"front": "着", "back": "着 [zhe]", "example": "他笑着说话。"}, {"front": "真", "back": "真 [zhēn]", "example": "这个人真高。"}, {"front": "正在", "back": "正在 [zhèngzài]", "example": "弟弟正在打篮球。"}, {"front": "知道", "back": "知道 [zhīdào]", "example": "我不知道他现在在哪里。"}, {"front": "准备", "back": "准备 [zhǔnbèi]", "example": "我在准备明天的考试。"}, {"front": "走", "back": "走 [zǒu]", "example": "我们走路去学校吧。"}, {"front": "最", "back": "最 [zuì]", "example": "她是我最好的朋友。"}, {"front": "左边", "back": "左边 [zuǒbiān]", "example": "左边的那个杯子是你的。"}, {"front": "晴", "back": "晴 [qíng]", "example": "今天是晴天。"}], "hsk3": [{"front": "阿姨", "back": "阿姨 [āyí]", "example": "这位阿姨对我很好。"}, {"front": "啊", "back": "啊 [a]", "example": "这个地方真漂亮啊！"}, {"front": "矮", "back": "矮 [ǎi]", "example": "他比我矮一点儿。"}, {"front": "爱好", "back": "爱好 [àihào]", "example": "我的爱好是游泳和跑步。"}, {"front": "安静", "back": "安静 [ānjìng]", "example": "请大家安静，我们要开始上课了。"}, {"front": "把", "back": "把 [bǎ]", "example": "请把桌子上的铅笔给我。"}, {"front": "班", "back": "班 [bān]", "example": "我们班有三十个学生。"}, {"front": "搬", "back": "搬 [bān]", "example": "我下个月要搬家。"}, {"front": "办公室", "back": "办公室 [bàngōngshì]", "example": "经理在办公室里。"}, {"front": "办法", "back": "办法 [bànfǎ]", "example": "你别急，我们再想想办法。"}, {"front": "帮忙", "back": "帮忙 [bāngmáng]", "example": "谢谢你来帮忙。"}, {"front": "包", "back": "包 [bāo]", "example": "我把钱放在包里了。"}, {"front": "北方", "back": "北方 [běifāng]", "example": "冬天，北方比南方冷多了。"}, {"front": "被", "back": "被 [bèi]", "example": "我的钱包被人拿走了。"}, {"front": "鼻子", "back": "鼻子 [bízi]", "example": "他感冒了，鼻子不舒服。"}, {"front": "笔记本", "back": "笔记本 [bǐjìběn]", "example": "请把笔记本电脑带来。"}, {"front": "比较", "back": "比较 [bǐjiào]", "example": "他比较喜欢喝茶。"}, {"front": "比赛", "back": "比赛 [bǐsài]", "example": "明天有一场足球比赛。"}, {"front": "必须", "back": "必须 [bìxū]", "example": "这件事，在周末前必须完成。"}, {"front": "变化", "back": "变化 [biànhuà]", "example": "十年不见，他好像没什么变化。"}, {"front": "别人", "back": "别人 [biérén]", "example": "不要总是看别人，要相信自己。"}, {"front": "不但..而且", "back": "不但..而且 [búdàn.. érqiě]", "example": "妹妹不但喜欢唱歌，而且爱跳舞。"}, {"front": "冰箱", "back": "冰箱 [bīngxiāng]", "example": "把水果放到冰箱里吧。"}, {"front": "菜单", "back": "菜单 [càidān]", "example": "服务员，请给我看一下菜单。"}, {"front": "草", "back": "草 [cǎo]", "example": "公园里的草绿了。"}, {"front": "差", "back": "差 [chà]", "example": "他汉语说得还差一点。"}, {"front": "参加", "back": "参加 [cānjiā]", "example": "这次会议有两百多人参加。"}, {"front": "超市", "back": "超市 [chāoshì]", "example": "超市里有很多种新鲜水果。"}, {"front": "衬衫", "back": "衬衫 [chènshān]", "example": "他今天穿了一件白衬衫。"}, {"front": "成绩", "back": "成绩 [chéngjì]", "example": "我们可以在网上查到考试成绩。"}, {"front": "城市", "back": "城市 [chéngshì]", "example": "这是一个很大的城市。"}, {"front": "迟到", "back": "迟到 [chídào]", "example": "上课不能迟到。"}, {"front": "除了", "back": "除了 [chúle]", "example": "除了不吃肉，我还不吃鸡蛋。"}, {"front": "船", "back": "船 [chuán]", "example": "你可以坐船去上海。"}, {"front": "春", "back": "春 [chūn]", "example": "春天来了，天气暖和了。"}, {"front": "词典", "back": "词典 [cídiǎn]", "example": "我用词典查了这个词。"}, {"front": "聪明", "back": "聪明 [cōngmíng]", "example": "那个孩子非常聪明。"}, {"front": "打扫", "back": "打扫 [dǎsǎo]", "example": "我打扫了一下房间。"}, {"front": "打算", "back": "打算 [dǎsuàn]", "example": "你打算什么时候去北京？"}, {"front": "带", "back": "带 [dài]", "example": "出门别忘了带手机。"}, {"front": "担心", "back": "担心 [dānxīn]", "example": "爷爷住院了，我很担心。"}, {"front": "蛋糕", "back": "蛋糕 [dàngāo]", "example": "生日的时候，我们买了一个大蛋糕。"}, {"front": "当然", "back": "当然 [dāngrán]", "example": "你生病了，我当然要来看看你。"}, {"front": "地", "back": "地 [de]", "example": "天慢慢地黑了。"}, {"front": "灯", "back": "灯 [dēng]", "example": "请把灯关上。"}, {"front": "地铁", "back": "地铁 [dìtiě]", "example": "坐地铁去公司很方便。"}, {"front": "地方", "back": "地方 [dìfang]", "example": "这个地方我来过三次了。"}, {"front": "地图", "back": "地图 [dìtú]", "example": "我的手机上有电子地图。"}, {"front": "电子邮件", "back": "电子邮件 [diànzǐ yóujiàn]", "example": "你给我发电子邮件了吗？"}, {"front": "电梯", "back": "电梯 [diàntī]", "example": "我们坐电梯上楼吧。"}, {"front": "东", "back": "东 [dōng]", "example": "向东走，就可以看到那个学校了。"}, {"front": "冬", "back": "冬 [dōng]", "example": "冬天，北方比南方冷多了。"}, {"front": "动物", "back": "动物 [dòngwù]", "example": "动物园里有一百多种动物。"}, {"front": "短", "back": "短 [duǎn]", "example": "这条裤子有点儿短。"}, {"front": "段", "back": "段 [duàn]", "example": "请大家读第一段课文。"}, {"front": "锻炼", "back": "锻炼 [duànliàn]", "example": "每天锻炼对身体很好。"}, {"front": "多么", "back": "多么 [duōme]", "example": "这个地方多么漂亮啊！"}, {"front": "饿", "back": "饿 [è]", "example": "我饿了，想吃饭。"}, {"front": "发", "back": "发 [fā]", "example": "我给他发了一条短信。"}, {"front": "耳朵", "back": "耳朵 [ěrduo]", "example": "他的耳朵很大。"}, {"front": "发现", "back": "发现 [fāxiàn]", "example": "我发现他瘦了很多。"}, {"front": "发烧", "back": "发烧 [fāshāo]", "example": "我身体不舒服，发烧了。"}, {"front": "方便", "back": "方便 [fāngbiàn]", "example": "我坐地铁去上班很方便。"}, {"front": "放", "back": "放 [fàng]", "example": "把水果放到冰箱里吧。"}, {"front": "放心", "back": "放心 [fàngxīn]", "example": "请放心，我会把事情办好的。"}, {"front": "分", "back": "分 [fēn]", "example": "现在是三点三十分。"}, {"front": "附近", "back": "附近 [fùjìn]", "example": "我家附近有一个超市。"}, {"front": "复习", "back": "复习 [fùxí]", "example": "考试前，我们要好好复习。"}, {"front": "干净", "back": "干净 [gānjìng]", "example": "这个房间很干净。"}, {"front": "感冒", "back": "感冒 [gǎnmào]", "example": "我感冒了，头很疼。"}, {"front": "感兴趣", "back": "感兴趣 [gǎnxìngqù]", "example": "我对中国文化很感兴趣。"}, {"front": "刚才", "back": "刚才 [gāngcái]", "example": "刚才谁打电话来了？"}, {"front": "个子", "back": "个子 [gèzi]", "example": "他个子很高，是我们班最高的。"}, {"front": "跟", "back": "跟 [gēn]", "example": "我跟朋友一起去看电影。"}, {"front": "根据", "back": "根据 [gēnjù]", "example": "根据天气预报，明天会下雨。"}, {"front": "更", "back": "更 [gèng]", "example": "他比我更喜欢游泳。"}, {"front": "公斤", "back": "公斤 [gōngjīn]", "example": "这个西瓜有三公斤。"}, {"front": "公园", "back": "公园 [gōngyuán]", "example": "我们去公园走走吧。"}, {"front": "故事", "back": "故事 [gùshi]", "example": "爷爷给我讲了一个有趣的故事。"}, {"front": "刮风", "back": "刮风 [guāfēng]", "example": "今天刮风了，很冷。"}, {"front": "关", "back": "关 [guān]", "example": "请把灯关上。"}, {"front": "玩儿", "back": "玩儿 [wánr]", "example": "孩子们在外面玩儿呢。"}, {"front": "关心", "back": "关心 [guānxīn]", "example": "爸爸很关心我的学习。"}, {"front": "关系", "back": "关系 [guānxi]", "example": "我们两个人的关系很好。"}, {"front": "关于", "back": "关于 [guānyú]", "example": "关于这个问题，我们还要再想一想。"}, {"front": "国家", "back": "国家 [guójiā]", "example": "世界上有很多国家。"}, {"front": "过", "back": "过 [guo]", "example": "我去过中国。"}, {"front": "还是", "back": "还是 [háishi]", "example": "你想喝咖啡，还是茶？"}, {"front": "害怕", "back": "害怕 [hàipà]", "example": "我害怕打针。"}, {"front": "后来", "back": "后来 [hòulái]", "example": "我们先吃饭，后来去看电影。"}, {"front": "黑板", "back": "黑板 [hēibǎn]", "example": "老师在黑板上写字。"}, {"front": "花", "back": "花 [huā]", "example": "桌子上放着一束花。"}, {"front": "护照", "back": "护照 [hùzhào]", "example": "出国旅游需要带护照。"}, {"front": "过去", "back": "过去 [guòqù]", "example": "过去我不喜欢吃蔬菜。"}, {"front": "画", "back": "画 [huà]", "example": "他在画一幅画。"}, {"front": "坏", "back": "坏 [huài]", "example": "这台电脑坏了。"}, {"front": "欢迎", "back": "欢迎 [huānyíng]", "example": "欢迎你们来我们家。"}, {"front": "还", "back": "还 [huán]", "example": "他还没吃饭呢。"}, {"front": "换", "back": "换 [huàn]", "example": "这件衣服太小了，我想换一件。"}, {"front": "环境", "back": "环境 [huánjìng]", "example": "这里的自然环境很好。"}, {"front": "黄河", "back": "黄河 [Huánghé]", "example": "黄河是中国第二长的河。"}, {"front": "回答", "back": "回答 [huídá]", "example": "他没有回答我的问题。"}, {"front": "会议", "back": "会议 [huìyì]", "example": "下午两点有一个会议。"}, {"front": "几乎", "back": "几乎 [jīhū]", "example": "他几乎每天都去游泳。"}, {"front": "或者", "back": "或者 [huòzhě]", "example": "你去，或者我去，都可以。"}, {"front": "机会", "back": "机会 [jīhuì]", "example": "这是一个很好的学习机会。"}, {"front": "极", "back": "极 [jí]", "example": "今天热极了。"}, {"front": "记得", "back": "记得 [jìde]", "example": "我还记得第一次见到她。"}, {"front": "检查", "back": "检查 [jiǎnchá]", "example": "考试前要检查一下答案。"}, {"front": "季节", "back": "季节 [jìjié]", "example": "你最喜欢哪个季节？"}, {"front": "简单", "back": "简单 [jiǎndān]", "example": "这道题很简单。"}, {"front": "见面", "back": "见面 [jiànmiàn]", "example": "我们明天见面吧。"}, {"front": "健康", "back": "健康 [jiànkāng]", "example": "希望你身体健康。"}, {"front": "讲", "back": "讲 [jiǎng]", "example": "老师在讲第一课。"}, {"front": "教", "back": "教 [jiāo]", "example": "妈妈教我做饭。"}, {"front": "角", "back": "角 [jiǎo]", "example": "这个杯子五块三角钱。"}, {"front": "脚", "back": "脚 [jiǎo]", "example": "我的脚很疼。"}, {"front": "接", "back": "接 [jiē]", "example": "我去机场接朋友。"}, {"front": "街道", "back": "街道 [jiēdào]", "example": "这条街道很热闹。"}, {"front": "结婚", "back": "结婚 [jiéhūn]", "example": "他们明年结婚。"}, {"front": "节目", "back": "节目 [jiémù]", "example": "你喜欢看什么节目？"}, {"front": "节日", "back": "节日 [jiérì]", "example": "春节是中国最重要的节日。"}, {"front": "结束", "back": "结束 [jiéshù]", "example": "电影结束了，我们回家吧。"}, {"front": "解决", "back": "解决 [jiějué]", "example": "这个问题你打算怎么解决？"}, {"front": "借", "back": "借 [jiè]", "example": "我想向图书馆借一本书。"}, {"front": "经常", "back": "经常 [jīngcháng]", "example": "他经常去图书馆看书。"}, {"front": "经过", "back": "经过 [jīngguò]", "example": "我每天上班都要经过这个公园。"}, {"front": "经理", "back": "经理 [jīnglǐ]", "example": "他是我们公司的经理。"}, {"front": "久", "back": "久 [jiǔ]", "example": "好久不见！你最近怎么样？"}, {"front": "旧", "back": "旧 [jiù]", "example": "这件衣服有点儿旧了。"}, {"front": "句子", "back": "句子 [jùzi]", "example": "请用这个词造一个句子。"}, {"front": "决定", "back": "决定 [juédìng]", "example": "这件事是经理决定的。"}, {"front": "渴", "back": "渴 [kě]", "example": "跑步以后，我很渴。"}, {"front": "刻", "back": "刻 [kè]", "example": "现在是三点一刻。"}, {"front": "可爱", "back": "可爱 [kě'ài]", "example": "她的小狗真可爱。"}, {"front": "客人", "back": "客人 [kèrén]", "example": "今天家里来了几个客人。"}, {"front": "空调", "back": "空调 [kōngtiáo]", "example": "天太热了，开一下空调吧。"}, {"front": "口", "back": "口 [kǒu]", "example": "请张开口。"}, {"front": "哭", "back": "哭 [kū]", "example": "小孩子摔倒了，哭了起来。"}, {"front": "筷子", "back": "筷子 [kuàizi]", "example": "用筷子吃饭需要练习。"}, {"front": "裤子", "back": "裤子 [kùzi]", "example": "这条裤子有点儿长。"}, {"front": "蓝", "back": "蓝 [lán]", "example": "天空是蓝色的。"}, {"front": "老", "back": "老 [lǎo]", "example": "他虽然很老了，但是身体很好。"}, {"front": "离开", "back": "离开 [líkāi]", "example": "他离开北京已经三年了。"}, {"front": "礼物", "back": "礼物 [lǐwù]", "example": "过生日的时候，我收到了很多礼物。"}, {"front": "历史", "back": "历史 [lìshǐ]", "example": "中国有很长的历史。"}, {"front": "脸", "back": "脸 [liǎn]", "example": "她的脸很漂亮。"}, {"front": "练习", "back": "练习 [liànxí]", "example": "我每天练习写汉字。"}, {"front": "辆", "back": "辆 [liàng]", "example": "路上有很多辆车。"}, {"front": "聊天", "back": "聊天 [liáotiān]", "example": "我喜欢和朋友聊天。"}, {"front": "了解", "back": "了解 [liǎojiě]", "example": "我对她了解得不多。"}, {"front": "留学", "back": "留学 [liúxué]", "example": "他在中国留学了两年。"}, {"front": "邻居", "back": "邻居 [línjū]", "example": "我的邻居是一个老爷爷。"}, {"front": "楼", "back": "楼 [lóu]", "example": "我住在三楼。"}, {"front": "绿", "back": "绿 [lǜ]", "example": "公园里的草绿了。"}, {"front": "马", "back": "马 [mǎ]", "example": "公园里有一匹白马。"}, {"front": "马上", "back": "马上 [mǎshàng]", "example": "我马上就来。"}, {"front": "满意", "back": "满意 [mǎnyì]", "example": "我对这次考试成绩很满意。"}, {"front": "帽子", "back": "帽子 [màozi]", "example": "天冷了，戴上帽子吧。"}, {"front": "米", "back": "米 [mǐ]", "example": "这个房间有二十平方米。"}, {"front": "面包", "back": "面包 [miànbāo]", "example": "我早上吃了两片面包。"}, {"front": "明白", "back": "明白 [míngbai]", "example": "老师说的话，我都明白了。"}, {"front": "拿", "back": "拿 [ná]", "example": "请把桌子上的书拿给我。"}, {"front": "奶奶", "back": "奶奶 [nǎinai]", "example": "我奶奶今年七十岁了。"}, {"front": "南", "back": "南 [nán]", "example": "图书馆在学校的南边。"}, {"front": "难", "back": "难 [nán]", "example": "这道题太难了。"}, {"front": "难过", "back": "难过 [nánguò]", "example": "他没考好，心里很难过。"}, {"front": "年级", "back": "年级 [niánjí]", "example": "他在小学三年级。"}, {"front": "年轻", "back": "年轻 [niánqīng]", "example": "他很年轻，才二十岁。"}, {"front": "努力", "back": "努力 [nǔlì]", "example": "他每天都很努力地学习。"}, {"front": "鸟", "back": "鸟 [niǎo]", "example": "树上有一只小鸟。"}, {"front": "爬山", "back": "爬山 [pá shān]", "example": "周末我们去爬山吧。"}, {"front": "盘子", "back": "盘子 [pánzi]", "example": "盘子里有很多水果。"}, {"front": "胖", "back": "胖 [pàng]", "example": "他最近胖了不少。"}, {"front": "啤酒", "back": "啤酒 [píjiǔ]", "example": "他喜欢喝啤酒。"}, {"front": "皮鞋", "back": "皮鞋 [píxié]", "example": "他穿着一双黑色皮鞋。"}, {"front": "瓶子", "back": "瓶子 [píngzi]", "example": "桌子上有一个空瓶子。"}, {"front": "骑", "back": "骑 [qí]", "example": "他骑自行车去上班。"}, {"front": "其他", "back": "其他 [qítā]", "example": "我不喜欢这个，有其他的吗？"}, {"front": "奇怪", "back": "奇怪 [qíguài]", "example": "他今天的样子很奇怪。"}, {"front": "其实", "back": "其实 [qíshí]", "example": "我其实不太了解他。"}, {"front": "起飞", "back": "起飞 [qǐfēi]", "example": "飞机几点起飞？"}, {"front": "起来", "back": "起来 [qǐlái]", "example": "早上七点，他起来了。"}, {"front": "清楚", "back": "清楚 [qīngchu]", "example": "老师说得很清楚，我都听懂了。"}, {"front": "请假", "back": "请假 [qǐngjià]", "example": "我今天请假，不去上班了。"}, {"front": "秋", "back": "秋 [qiū]", "example": "秋天，叶子变黄了。"}, {"front": "裙子", "back": "裙子 [qúnzi]", "example": "她穿了一条红裙子。"}, {"front": "然后", "back": "然后 [ránhòu]", "example": "先洗手，然后再吃饭。"}, {"front": "热情", "back": "热情 [rèqíng]", "example": "他对客人非常热情。"}, {"front": "认为", "back": "认为 [rènwéi]", "example": "我认为这个办法很好。"}, {"front": "认真", "back": "认真 [rènzhēn]", "example": "她学习很认真。"}, {"front": "容易", "back": "容易 [róngyì]", "example": "这道题很容易。"}, {"front": "如果", "back": "如果 [rúguǒ]", "example": "如果明天下雨，我就不去了。"}, {"front": "伞", "back": "伞 [sǎn]", "example": "下雨了，你带伞了吗？"}, {"front": "上网", "back": "上网 [shàngwǎng]", "example": "我每天上网看新闻。"}, {"front": "生气", "back": "生气 [shēngqì]", "example": "他做错事了，妈妈很生气。"}, {"front": "声音", "back": "声音 [shēngyīn]", "example": "外面有很大的声音。"}, {"front": "试", "back": "试 [shì]", "example": "你试试这件衣服吧。"}, {"front": "世界", "back": "世界 [shìjiè]", "example": "世界上有很多国家。"}, {"front": "瘦", "back": "瘦 [shòu]", "example": "他最近瘦了很多。"}, {"front": "舒服", "back": "舒服 [shūfu]", "example": "躺在沙发上很舒服。"}, {"front": "叔叔", "back": "叔叔 [shūshu]", "example": "我叔叔是一名医生。"}, {"front": "树", "back": "树 [shù]", "example": "院子里有一棵大树。"}, {"front": "数学", "back": "数学 [shùxué]", "example": "我的数学成绩很好。"}, {"front": "刷牙", "back": "刷牙 [shuāyá]", "example": "每天早晚都要刷牙。"}, {"front": "双", "back": "双 [shuāng]", "example": "他买了一双新鞋。"}, {"front": "水平", "back": "水平 [shuǐpíng]", "example": "他的中文水平越来越高了。"}, {"front": "太阳", "back": "太阳 [tàiyáng]", "example": "今天太阳很大，很热。"}, {"front": "司机", "back": "司机 [sījī]", "example": "出租车司机很热情。"}, {"front": "特别", "back": "特别 [tèbié]", "example": "我特别想跟你一起去。"}, {"front": "疼", "back": "疼 [téng]", "example": "我的脚很疼。"}, {"front": "提高", "back": "提高 [tígāo]", "example": "你数学成绩提高了不少。"}, {"front": "体育", "back": "体育 [tǐyù]", "example": "他很喜欢体育运动。"}, {"front": "甜", "back": "甜 [tián]", "example": "这个西瓜很甜。"}, {"front": "条", "back": "条 [tiáo]", "example": "她买了一条新裙子。"}, {"front": "同事", "back": "同事 [tóngshì]", "example": "他是我的同事，我们一起工作。"}, {"front": "同意", "back": "同意 [tóngyì]", "example": "我同意你的看法。"}, {"front": "头发", "back": "头发 [tóufa]", "example": "她的头发很长，很漂亮。"}, {"front": "突然", "back": "突然 [tūrán]", "example": "他突然站起来走出去了。"}, {"front": "图书馆", "back": "图书馆 [túshūguǎn]", "example": "他经常去图书馆看书。"}, {"front": "腿", "back": "腿 [tuǐ]", "example": "她的腿很长。"}, {"front": "完成", "back": "完成 [wánchéng]", "example": "我终于完成了今天的作业。"}, {"front": "碗", "back": "碗 [wǎn]", "example": "请再给我盛一碗米饭。"}, {"front": "万", "back": "万 [wàn]", "example": "这辆车要二十万元。"}, {"front": "忘记", "back": "忘记 [wàngjì]", "example": "我忘记带手机了。"}, {"front": "为", "back": "为 [wèi]", "example": "他为大家做了很多事。"}, {"front": "为了", "back": "为了 [wèile]", "example": "为了准备考试，他每天都学习到很晚。"}, {"front": "位", "back": "位 [wèi]", "example": "他真是一位好老师。"}, {"front": "文化", "back": "文化 [wénhuà]", "example": "中国有很丰富的文化。"}, {"front": "西", "back": "西 [xī]", "example": "学校在公司的西边。"}, {"front": "习惯", "back": "习惯 [xíguàn]", "example": "我已经习惯了早起。"}, {"front": "洗手间", "back": "洗手间 [xǐshǒujiān]", "example": "请问洗手间在哪儿？"}, {"front": "洗澡", "back": "洗澡 [xǐzǎo]", "example": "我每天晚上都洗澡。"}, {"front": "夏", "back": "夏 [xià]", "example": "夏天，我们开着空调睡觉。"}, {"front": "先", "back": "先 [xiān]", "example": "你先坐，我马上来。"}, {"front": "香蕉", "back": "香蕉 [xiāngjiāo]", "example": "我每天早上吃一根香蕉。"}, {"front": "相信", "back": "相信 [xiāngxìn]", "example": "你放心，我相信你。"}, {"front": "向", "back": "向 [xiàng]", "example": "请向右转。"}, {"front": "像", "back": "像 [xiàng]", "example": "这个孩子长得很像他爸爸。"}, {"front": "小心", "back": "小心 [xiǎoxīn]", "example": "请小心，路上有很多水。"}, {"front": "校长", "back": "校长 [xiàozhǎng]", "example": "我们学校的校长是一位老师。"}, {"front": "新鲜", "back": "新鲜 [xīnxiān]", "example": "超市里有很多新鲜水果。"}, {"front": "新闻", "back": "新闻 [xīnwén]", "example": "我每天上网看新闻。"}, {"front": "信用卡", "back": "信用卡 [xìnyòngkǎ]", "example": "我想去银行办一张信用卡。"}, {"front": "行李箱", "back": "行李箱 [xínglixiāng]", "example": "他拿着一个大行李箱。"}, {"front": "熊猫", "back": "熊猫 [xióngmāo]", "example": "我很喜欢熊猫。"}, {"front": "需要", "back": "需要 [xūyào]", "example": "我需要一本汉语词典。"}, {"front": "选择", "back": "选择 [xuǎnzé]", "example": "你自己选择吧，两个都可以。"}, {"front": "要求", "back": "要求 [yāoqiú]", "example": "老师对我们要求很严格。"}, {"front": "爷爷", "back": "爷爷 [yéye]", "example": "我爷爷今年八十岁了。"}, {"front": "一定", "back": "一定 [yídìng]", "example": "你一定要好好照顾自己。"}, {"front": "一共", "back": "一共 [yígòng]", "example": "我们一共来了五个人。"}, {"front": "一会儿", "back": "一会儿 [yīhuìr]", "example": "等一会儿，我马上就来。"}, {"front": "一样", "back": "一样 [yīyàng]", "example": "这两件衣服一样大。"}, {"front": "一般", "back": "一般 [yībān]", "example": "他一般七点起床。"}, {"front": "一边", "back": "一边 [yībiān]", "example": "他一边吃饭一边看电视。"}, {"front": "一直", "back": "一直 [yīzhí]", "example": "他一直等到晚上八点。"}, {"front": "以前", "back": "以前 [yǐqián]", "example": "以前，他住在北京。"}, {"front": "音乐", "back": "音乐 [yīnyuè]", "example": "我喜欢听音乐。"}, {"front": "银行", "back": "银行 [yínháng]", "example": "我去银行取了一些钱。"}, {"front": "饮料", "back": "饮料 [yǐnliào]", "example": "你想喝什么饮料？"}, {"front": "应该", "back": "应该 [yīnggāi]", "example": "你应该多喝水。"}, {"front": "影响", "back": "影响 [yǐngxiǎng]", "example": "噪音影响了我的睡眠。"}, {"front": "用", "back": "用 [yòng]", "example": "请用筷子吃饭。"}, {"front": "游戏", "back": "游戏 [yóuxì]", "example": "他放学后喜欢玩游戏。"}, {"front": "有名", "back": "有名 [yǒumíng]", "example": "北京烤鸭非常有名。"}, {"front": "又", "back": "又 [yòu]", "example": "我们休息了一会儿，又开始工作了。"}, {"front": "遇到", "back": "遇到 [yùdào]", "example": "我在街上遇到了一个老朋友。"}, {"front": "元", "back": "元 [yuán]", "example": "这个苹果三元一斤。"}, {"front": "愿意", "back": "愿意 [yuànyì]", "example": "我愿意帮你。"}, {"front": "越", "back": "越 [yuè]", "example": "他的汉语越来越好了。"}, {"front": "月亮", "back": "月亮 [yuèliang]", "example": "今晚的月亮很圆。"}, {"front": "站", "back": "站 [zhàn]", "example": "他站在门口等我。"}, {"front": "张", "back": "张 [zhāng]", "example": "墙上贴着一张照片。"}, {"front": "长", "back": "长 [zhǎng]", "example": "这条路很长。"}, {"front": "着急", "back": "着急 [zháojí]", "example": "别着急，慢慢说。"}, {"front": "照顾", "back": "照顾 [zhàogù]", "example": "妈妈一直照顾生病的爸爸。"}, {"front": "照相机", "back": "照相机 [zhàoxiàngjī]", "example": "我新买了一个照相机。"}, {"front": "照片", "back": "照片 [zhàopiàn]", "example": "这是我去北京时拍的照片。"}, {"front": "只", "back": "只 [zhǐ]", "example": "房间里只有我一个人。"}, {"front": "只有..才..", "back": "只有..才.. [zhǐyǒu cái]", "example": "只有努力学习，才能取得好成绩。"}, {"front": "中间", "back": "中间 [zhōngjiān]", "example": "请坐在中间。"}, {"front": "终于", "back": "终于 [zhōngyú]", "example": "春天终于来了。"}, {"front": "种", "back": "种 [zhǒng]", "example": "超市里有很多种新鲜水果。"}, {"front": "重要", "back": "重要 [zhòngyào]", "example": "健康是最重要的。"}, {"front": "周末", "back": "周末 [zhōumò]", "example": "周末我喜欢去爬山。"}, {"front": "主要", "back": "主要 [zhǔyào]", "example": "这本书主要写了中国历史。"}, {"front": "注意", "back": "注意 [zhùyì]", "example": "过马路的时候要注意安全。"}, {"front": "自己", "back": "自己 [zìjǐ]", "example": "你要相信自己。"}, {"front": "自行车", "back": "自行车 [zìxíngchē]", "example": "他骑自行车去上班。"}, {"front": "总是", "back": "总是 [zǒngshì]", "example": "他总是比我先到学校。"}, {"front": "嘴", "back": "嘴 [zuǐ]", "example": "他嘴角带着微笑。"}, {"front": "最后", "back": "最后 [zuìhòu]", "example": "最后，他终于找到了答案。"}, {"front": "最近", "back": "最近 [zuìjìn]", "example": "最近天气变冷了。"}, {"front": "作业", "back": "作业 [zuòyè]", "example": "我做完作业才能出去玩。"}, {"front": "中文", "back": "中文 [Zhōngwén]", "example": "他能用中文写信了。"}, {"front": "饱", "back": "饱 [bǎo]", "example": "我吃饱了，不用再盛了。"}, {"front": "半", "back": "半 [bàn]", "example": "现在是三点半。"}, {"front": "层", "back": "层 [céng]", "example": "我住在这栋楼的五层。"}, {"front": "花", "back": "花 [huā]", "example": "桌子上放着一束花。"}]};
+let level = 'hsk1', deck = [], idx = 0, flipped = false;
 function parsePinyin(back) {
   const m = back.match(/\[(.+)\]$/);
   return m ? m[1] : '';
 }
-
 function setLevel(l, btn) {
   level = l;
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   if (btn) btn.classList.add('active');
   else document.querySelector(`.tab[data-level="${l}"]`).classList.add('active');
-  deck = [...RAW[l]];
-  idx = 0;
+  deck = [...RAW[l]]; idx = 0;
   showCard();
   document.getElementById('doneScreen').style.display = 'none';
   document.getElementById('cardArea').style.display = 'block';
@@ -262,46 +151,38 @@ function setLevel(l, btn) {
   document.querySelector('.progress-bar').style.display = '';
   document.querySelector('.progress-text').style.display = '';
 }
-
 function showCard() {
   flipped = false;
-  document.getElementById('cardInner').classList.remove('flipped');
+  const inner = document.getElementById('cardInner');
+  inner.style.transition = 'none';
+  inner.classList.remove('flipped');
+  requestAnimationFrame(() => { inner.style.transition = ''; });
   const card = deck[idx];
   document.getElementById('cardFront').textContent = card.front;
   document.getElementById('cardBackHanzi').textContent = card.front;
   document.getElementById('cardBackPinyin').textContent = parsePinyin(card.back);
+  document.getElementById('cardExample').textContent = card.example || '';
   const pct = Math.round((idx + 1) / deck.length * 100);
   document.getElementById('progressFill').style.width = pct + '%';
   document.getElementById('progressText').textContent = `${idx + 1} / ${deck.length}`;
 }
-
 function flipCard() {
   flipped = !flipped;
   document.getElementById('cardInner').classList.toggle('flipped', flipped);
 }
-
 function nextCard() {
-  if (idx < deck.length - 1) {
-    idx++;
-    showCard();
-  } else {
-    showDone();
-  }
+  if (idx < deck.length - 1) { idx++; showCard(); } else showDone();
 }
-
 function prevCard() {
   if (idx > 0) { idx--; showCard(); }
 }
-
 function shuffleCards() {
   for (let i = deck.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [deck[i], deck[j]] = [deck[j], deck[i]];
   }
-  idx = 0;
-  showCard();
+  idx = 0; showCard();
 }
-
 function showDone() {
   document.getElementById('cardArea').style.display = 'none';
   document.querySelectorAll('.nav-btns button, .shuffle-btn').forEach(b => b.style.display = 'none');
@@ -311,10 +192,8 @@ function showDone() {
   document.getElementById('doneText').textContent = `${names[level]} 단어 ${deck.length}개를 모두 학습했습니다!`;
   document.getElementById('doneScreen').style.display = 'flex';
 }
-
 function restart() {
-  deck = [...RAW[level]];
-  idx = 0;
+  deck = [...RAW[level]]; idx = 0;
   document.getElementById('doneScreen').style.display = 'none';
   document.getElementById('cardArea').style.display = 'block';
   document.querySelectorAll('.nav-btns button, .shuffle-btn').forEach(b => b.style.display = '');
@@ -322,22 +201,17 @@ function restart() {
   document.querySelector('.progress-text').style.display = '';
   showCard();
 }
-
-// 키보드
 document.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight') nextCard();
   else if (e.key === 'ArrowLeft') prevCard();
   else if (e.key === ' ') { e.preventDefault(); flipCard(); }
 });
-
-// 스와이프
 let touchX = 0;
 document.getElementById('cardArea').addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, {passive:true});
 document.getElementById('cardArea').addEventListener('touchend', e => {
   const dx = e.changedTouches[0].clientX - touchX;
   if (Math.abs(dx) > 50) { if (dx < 0) nextCard(); else prevCard(); }
 }, {passive:true});
-
 setLevel('hsk1', document.querySelector('.tab[data-level="hsk1"]'));
 </script>
 </body>
