@@ -168,9 +168,7 @@ function showCard() {
   document.getElementById('cardBackHanzi').textContent = card.front;
   document.getElementById('cardBackPinyin').textContent = parsePinyin(card.back);
   const examples = card.examples.filter(e => e);
-  const exIdx = (isShuffled && examples.length > 0)
-    ? Math.floor(Math.random() * examples.length)
-    : 0;
+  const exIdx = examples.length > 0 ? Math.floor(Math.random() * examples.length) : 0;
   document.getElementById('cardExample').textContent = examples[exIdx] || '';
   const pct = Math.round((idx + 1) / deck.length * 100);
   document.getElementById('progressFill').style.width = pct + '%';
