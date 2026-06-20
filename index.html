@@ -455,12 +455,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // 모바일 터치
   wrap.addEventListener('touchstart', (e) => {
     isDragging = true;
+    e.preventDefault();
     seekAudio(e.touches[0]);
-  }, {passive: true});
+  }, {passive: false});
   document.addEventListener('touchmove', (e) => {
     if (!isDragging) return;
+    e.preventDefault();
     seekAudio(e.touches[0]);
-  }, {passive: true});
+  }, {passive: false});
   document.addEventListener('touchend', () => { isDragging = false; });
 });
 
