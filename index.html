@@ -133,7 +133,7 @@
   .app-tab.active { background: #1a1a1a; color: #fff; }
 
   /* 듣기연습 섹션 */
-  #listeningSection { width: 100%; max-width: 480px; }
+  #listeningSection { width: 100%; max-width: 480px; display: flex; flex-direction: column; align-items: center; }
   .listen-level-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
   .listen-level-tabs .tab { padding: 8px 20px; border-radius: 20px; border: 1.5px solid #ddd; background: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; color: #666; }
   .listen-level-tabs .tab.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
@@ -163,11 +163,11 @@
   .player-progress { width: 100%; margin-bottom: 10px; }
   .player-bar-wrap {
     width: 100%; height: 20px; background: #e8e8e8;
-    border-radius: 10px; cursor: pointer; margin-bottom: 6px;
+    border-radius: 0; cursor: pointer; margin-bottom: 6px;
     position: relative; user-select: none;
   }
   .player-bar-fill {
-    height: 100%; background: #1a1a1a; border-radius: 10px;
+    height: 100%; background: #1a1a1a; border-radius: 0;
     transition: width 0.1s; pointer-events: none;
   }
   .player-time {
@@ -202,13 +202,18 @@
   <button class="app-tab active" onclick="switchApp('flashcard', this)">HSK 단어 카드</button>
   <button class="app-tab" onclick="switchApp('listening', this)">HSK 듣기 연습</button>
 </div>
+<div class="tabs" id="levelTabs">
+  <button class="tab" data-level="hsk1" onclick="setLevel('hsk1', this)">HSK 1급</button>
+  <button class="tab" data-level="hsk2" onclick="setLevel('hsk2', this)">HSK 2급</button>
+  <button class="tab active" data-level="hsk3" onclick="setLevel('hsk3', this)">HSK 3급</button>
+</div>
+<div class="tabs" id="listenTabs" style="display:none;">
+  <button class="tab" data-level="hsk1" onclick="setListenLevel('hsk1', this)">HSK 1급</button>
+  <button class="tab" data-level="hsk2" onclick="setListenLevel('hsk2', this)">HSK 2급</button>
+  <button class="tab active" data-level="hsk3" onclick="setListenLevel('hsk3', this)">HSK 3급</button>
+</div>
 <!-- 듣기연습 섹션 -->
 <div id="listeningSection" style="display:none;">
-  <div class="tabs" id="listenTabs">
-    <button class="tab active" data-level="hsk1" onclick="setListenLevel('hsk1', this)">HSK 1급</button>
-    <button class="tab" data-level="hsk2" onclick="setListenLevel('hsk2', this)">HSK 2급</button>
-    <button class="tab" data-level="hsk3" onclick="setListenLevel('hsk3', this)">HSK 3급</button>
-  </div>
   <div class="file-list" id="fileList">
     <div class="no-files">파일을 불러오는 중...</div>
   </div>
@@ -231,11 +236,6 @@
   </div>
 </div>
 <!-- 플래시카드 섹션 -->
-<div class="tabs">
-  <button class="tab" data-level="hsk1" onclick="setLevel('hsk1', this)">HSK 1급</button>
-  <button class="tab" data-level="hsk2" onclick="setLevel('hsk2', this)">HSK 2급</button>
-  <button class="tab active" data-level="hsk3" onclick="setLevel('hsk3', this)">HSK 3급</button>
-</div>
 <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 <div class="progress-text" id="progressText"></div>
 <div class="card-area" id="cardArea">
@@ -322,13 +322,16 @@ function handleDetailClick() {
 function switchApp(mode, btn) {
   document.querySelectorAll('.app-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
-  const fc = document.querySelector('.tabs, .progress-bar, .progress-text, .card-area, .nav-btns, .shuffle-btn, #doneScreen');
   if (mode === 'flashcard') {
     document.getElementById('listeningSection').style.display = 'none';
-    document.querySelectorAll('.tabs:not(#listenTabs), .progress-bar, .progress-text, .card-area, .nav-btns, .shuffle-btn, #doneScreen').forEach(el => el.style.display = '');
+    document.getElementById('listenTabs').style.display = 'none';
+    document.getElementById('levelTabs').style.display = 'flex';
+    document.querySelectorAll('.progress-bar, .progress-text, .card-area, .nav-btns, .shuffle-btn, #doneScreen').forEach(el => el.style.display = '');
   } else {
-    document.getElementById('listeningSection').style.display = 'block';
-    document.querySelectorAll('.tabs:not(#listenTabs), .progress-bar, .progress-text, .card-area, .nav-btns, .shuffle-btn, #doneScreen').forEach(el => el.style.display = 'none');
+    document.getElementById('listeningSection').style.display = 'flex';
+    document.getElementById('listenTabs').style.display = 'flex';
+    document.getElementById('levelTabs').style.display = 'none';
+    document.querySelectorAll('.progress-bar, .progress-text, .card-area, .nav-btns, .shuffle-btn, #doneScreen').forEach(el => el.style.display = 'none');
     loadAudioFiles(listenLevel);
   }
 }
@@ -336,7 +339,7 @@ function switchApp(mode, btn) {
 // ── 듣기연습 로직 ─────────────────────────────────────────────
 const REPO = 'crazywave3/HSK_voca';
 const BRANCH = 'main';
-let listenLevel = 'hsk1';
+let listenLevel = 'hsk3';
 let audioEl = new Audio();
 let isPlaying = false;
 let currentFile = null;
@@ -579,7 +582,7 @@ document.getElementById('cardArea').addEventListener('touchend', e => {
   const dx = e.changedTouches[0].clientX - touchX;
   if (Math.abs(dx) > 50) { if (dx < 0) nextCard(); else prevCard(); }
 }, {passive: true});
-setLevel('hsk3', document.querySelector('.tab[data-level="hsk3"]'));
+setLevel('hsk3', document.querySelector('#levelTabs .tab[data-level="hsk3"]'));
 </script>
 </body>
 </html>
