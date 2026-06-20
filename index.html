@@ -135,6 +135,9 @@
   /* 듣기연습 섹션 */
   #listeningSection { width: 100%; max-width: 480px; }
   .listen-level-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+  .listen-level-tabs .tab { padding: 8px 20px; border-radius: 20px; border: 1.5px solid #ddd; background: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; color: #666; }
+  .listen-level-tabs .tab.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .listen-level-tabs .tab:hover { border-color: #999; color: #333; }
   .file-list { width: 100%; margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
   .file-item {
     padding: 14px 16px; border-radius: 12px;
@@ -159,9 +162,9 @@
   }
   .player-progress { width: 100%; margin-bottom: 10px; }
   .player-bar-wrap {
-    width: 100%; height: 6px; background: #e8e8e8;
-    border-radius: 3px; cursor: pointer; margin-bottom: 6px;
-    position: relative;
+    width: 100%; height: 10px; background: #e8e8e8;
+    border-radius: 5px; cursor: pointer; margin-bottom: 6px;
+    position: relative; user-select: none;
   }
   .player-bar-fill {
     height: 100%; background: #1a1a1a; border-radius: 3px;
@@ -201,7 +204,7 @@
 </div>
 <!-- 듣기연습 섹션 -->
 <div id="listeningSection" style="display:none;">
-  <div class="listen-level-tabs tabs">
+  <div class="listen-level-tabs">
     <button class="tab active" data-level="hsk1" onclick="setListenLevel('hsk1', this)">HSK 1급</button>
     <button class="tab" data-level="hsk2" onclick="setListenLevel('hsk2', this)">HSK 2급</button>
     <button class="tab" data-level="hsk3" onclick="setListenLevel('hsk3', this)">HSK 3급</button>
@@ -322,10 +325,10 @@ function switchApp(mode, btn) {
   const fc = document.querySelector('.tabs, .progress-bar, .progress-text, .card-area, .nav-btns, .shuffle-btn, #doneScreen');
   if (mode === 'flashcard') {
     document.getElementById('listeningSection').style.display = 'none';
-    document.querySelectorAll('.tabs, .progress-bar, .progress-text, .card-area, .nav-btns, .shuffle-btn, #doneScreen').forEach(el => el.style.display = '');
+    document.querySelectorAll('.tabs:not(.listen-level-tabs), .progress-bar, .progress-text, .card-area, .nav-btns, .shuffle-btn, #doneScreen').forEach(el => el.style.display = '');
   } else {
     document.getElementById('listeningSection').style.display = 'block';
-    document.querySelectorAll('.tabs, .progress-bar, .progress-text, .card-area, .nav-btns, .shuffle-btn, #doneScreen').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.tabs:not(.listen-level-tabs), .progress-bar, .progress-text, .card-area, .nav-btns, .shuffle-btn, #doneScreen').forEach(el => el.style.display = 'none');
     loadAudioFiles(listenLevel);
   }
 }
@@ -425,9 +428,35 @@ function seekAudio(e) {
   if (!currentFile || !audioEl.duration) return;
   const wrap = document.getElementById('playerBarWrap');
   const rect = wrap.getBoundingClientRect();
-  const ratio = (e.clientX - rect.left) / rect.width;
+  const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
   audioEl.currentTime = ratio * audioEl.duration;
 }
+
+// 드래그 기능
+let isDragging = false;
+document.addEventListener('DOMContentLoaded', () => {
+  const wrap = document.getElementById('playerBarWrap');
+  if (!wrap) return;
+  wrap.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    seekAudio(e);
+  });
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    seekAudio(e);
+  });
+  document.addEventListener('mouseup', () => { isDragging = false; });
+  // 모바일 터치
+  wrap.addEventListener('touchstart', (e) => {
+    isDragging = true;
+    seekAudio(e.touches[0]);
+  }, {passive: true});
+  document.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    seekAudio(e.touches[0]);
+  }, {passive: true});
+  document.addEventListener('touchend', () => { isDragging = false; });
+});
 
 function updateProgress() {
   if (!audioEl.duration) return;
@@ -547,7 +576,7 @@ document.getElementById('cardArea').addEventListener('touchend', e => {
   const dx = e.changedTouches[0].clientX - touchX;
   if (Math.abs(dx) > 50) { if (dx < 0) nextCard(); else prevCard(); }
 }, {passive: true});
-setLevel('hsk1', document.querySelector('.tab[data-level="hsk1"]'));
+setLevel('hsk3', document.querySelector('.tab[data-level="hsk3"]'));
 </script>
 </body>
 </html>
