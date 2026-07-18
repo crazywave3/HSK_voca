@@ -132,6 +132,31 @@
   .app-tab:first-child { border-right: 1.5px solid #ddd; }
   .app-tab.active { background: #1a1a1a; color: #fff; }
 
+
+  /* 독해 섹션 */
+  .reading-box {
+    width: 100%; background: #fff; border-radius: 16px;
+    border: 1.5px solid #e8e8e8; padding: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    margin-bottom: 16px; min-height: 200px;
+  }
+  .reading-loading {
+    text-align: center; color: #888; font-size: 15px; padding: 40px 0;
+  }
+  .reading-title {
+    font-size: 16px; font-weight: 700; color: #1a1a1a;
+    margin-bottom: 6px; text-align: center;
+  }
+  .reading-level {
+    font-size: 12px; color: #888; text-align: center; margin-bottom: 16px;
+  }
+  .reading-text {
+    font-size: 17px; line-height: 2; color: #222;
+    font-family: 'SimSun', serif; word-break: break-all;
+  }
+  .reading-btns {
+    display: flex; gap: 10px; justify-content: center; width: 100%;
+  }
   /* 듣기연습 섹션 */
   #listeningSection { width: 100%; max-width: 480px; display: flex; flex-direction: column; align-items: center; }
   .listen-level-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
@@ -200,6 +225,7 @@
 <div class="app-tabs">
   <button class="app-tab active" onclick="switchApp('flashcard', this)">HSK 단어 카드</button>
   <button class="app-tab" onclick="switchApp('listening', this)">HSK 듣기 연습</button>
+  <button class="app-tab" onclick="switchApp('reading', this)">HSK 독해</button>
 </div>
 <div class="tabs" id="levelTabs">
   <button class="tab" data-level="hsk1" onclick="setLevel('hsk1', this)">HSK 1급</button>
@@ -210,6 +236,18 @@
   <button class="tab" data-level="hsk1" onclick="setListenLevel('hsk1', this)">HSK 1급</button>
   <button class="tab" data-level="hsk2" onclick="setListenLevel('hsk2', this)">HSK 2급</button>
   <button class="tab active" data-level="hsk3" onclick="setListenLevel('hsk3', this)">HSK 3급</button>
+</div>
+<!-- 독해 섹션 -->
+<div id="readingSection" style="display:none; width:100%; max-width:480px; flex-direction:column; align-items:center;">
+  <div class="reading-box" id="readingBox">
+    <div class="reading-loading" id="readingLoading" style="display:none;">지문 생성 중...</div>
+    <div class="reading-content" id="readingContent"></div>
+  </div>
+  <div class="reading-btns">
+    <button class="ctrl-btn" id="readingPrevBtn" onclick="readingPrev()" disabled>◀ 이전</button>
+    <button class="ctrl-btn play" onclick="generateReading()">새 지문 생성</button>
+    <button class="ctrl-btn" id="readingNextBtn" onclick="readingNext()" disabled>다음 ▶</button>
+  </div>
 </div>
 <!-- 듣기연습 섹션 -->
 <div id="listeningSection" style="display:none;">
@@ -317,24 +355,112 @@ function handleDetailClick() {
   });
 }
 
+
+// ── 독해 로직 ─────────────────────────────────────────────────
+let readingHistory = [];
+let readingIdx = -1;
+
+async function generateReading() {
+  const box = document.getElementById('readingContent');
+  const loading = document.getElementById('readingLoading');
+  box.innerHTML = '';
+  loading.style.display = 'block';
+  document.getElementById('readingPrevBtn').disabled = true;
+  document.getElementById('readingNextBtn').disabled = true;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: `중국 초등학교 3~4학년 수준의 중국어 독해 지문을 랜덤 주제로 생성해줘.
+
+조건:
+- 제목 포함
+- 본문 150~200자 내외
+- 난이도: 중국 초등학교 3~4학년
+- 매번 다른 주제와 내용
+- 아래 JSON 형식으로만 답해줘, 다른 텍스트 없음:
+{"title":"제목","level":"阅读短文（小学三四年级）","text":"본문내용"}`
+        }]
+      })
+    });
+
+    const data = await resp.json();
+    const raw = data.content[0].text.trim().replace(/```json|```/g, '');
+    const parsed = JSON.parse(raw);
+
+    // 히스토리에 추가
+    readingHistory.push(parsed);
+    readingIdx = readingHistory.length - 1;
+
+    renderReading(parsed);
+  } catch(e) {
+    box.innerHTML = '<div style="color:#c62828; text-align:center; padding:20px;">생성 실패. 다시 시도해주세요.</div>';
+  } finally {
+    loading.style.display = 'none';
+    updateReadingBtns();
+  }
+}
+
+function renderReading(data) {
+  const box = document.getElementById('readingContent');
+  box.innerHTML = `
+    <div class="reading-title">${data.title}</div>
+    <div class="reading-level">${data.level}</div>
+    <div class="reading-text">${data.text.replace(/\n/g, '<br>')}</div>
+  `;
+}
+
+function readingPrev() {
+  if (readingIdx > 0) {
+    readingIdx--;
+    renderReading(readingHistory[readingIdx]);
+    updateReadingBtns();
+  }
+}
+
+function readingNext() {
+  if (readingIdx < readingHistory.length - 1) {
+    readingIdx++;
+    renderReading(readingHistory[readingIdx]);
+    updateReadingBtns();
+  }
+}
+
+function updateReadingBtns() {
+  document.getElementById('readingPrevBtn').disabled = readingIdx <= 0;
+  document.getElementById('readingNextBtn').disabled = readingIdx >= readingHistory.length - 1;
+}
+
 // ── 앱 모드 전환 ─────────────────────────────────────────────
 function switchApp(mode, btn) {
   document.querySelectorAll('.app-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
+
+  // 모두 숨기기
+  document.getElementById('listeningSection').style.display = 'none';
+  document.getElementById('listenTabs').style.display = 'none';
+  document.getElementById('levelTabs').style.display = 'none';
+  document.getElementById('readingSection').style.display = 'none';
+  document.querySelectorAll('.progress-bar, .progress-text, .card-area, .nav-btns, .shuffle-btn, #doneScreen').forEach(el => el.style.display = 'none');
+
   if (mode === 'flashcard') {
-    document.getElementById('listeningSection').style.display = 'none';
-    document.getElementById('listenTabs').style.display = 'none';
     document.getElementById('levelTabs').style.display = 'flex';
     document.querySelectorAll('.progress-bar, .progress-text, .card-area, .nav-btns, .shuffle-btn, #doneScreen').forEach(el => el.style.display = '');
-  } else {
+  } else if (mode === 'listening') {
     document.getElementById('listeningSection').style.display = 'flex';
     document.getElementById('listenTabs').style.display = 'flex';
-    document.getElementById('levelTabs').style.display = 'none';
-    document.querySelectorAll('.progress-bar, .progress-text, .card-area, .nav-btns, .shuffle-btn, #doneScreen').forEach(el => el.style.display = 'none');
-    // listenTabs에서 현재 급수 active 클래스 적용
     document.querySelectorAll('#listenTabs .tab').forEach(t => t.classList.remove('active'));
     document.querySelector('#listenTabs .tab[data-level="' + listenLevel + '"]').classList.add('active');
     loadAudioFiles(listenLevel);
+  } else if (mode === 'reading') {
+    document.getElementById('readingSection').style.display = 'flex';
+    if (readingHistory.length === 0) generateReading();
   }
 }
 
