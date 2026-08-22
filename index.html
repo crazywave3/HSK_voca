@@ -231,8 +231,8 @@
 <div class="tabs" id="levelTabs">
   <button class="tab" data-level="hsk1" onclick="setLevel('hsk1', this)">HSK 1급</button>
   <button class="tab" data-level="hsk2" onclick="setLevel('hsk2', this)">HSK 2급</button>
-  <button class="tab active" data-level="hsk3" onclick="setLevel('hsk3', this)">HSK 3급</button>
-  <button class="tab" data-level="hsk4" onclick="setLevel('hsk4', this)">HSK 4급</button>
+  <button class="tab" data-level="hsk3" onclick="setLevel('hsk3', this)">HSK 3급</button>
+  <button class="tab active" data-level="hsk4" onclick="setLevel('hsk4', this)">HSK 4급</button>
 </div>
 <div class="tabs" id="listenTabs" style="display:none;">
   <button class="tab" data-level="hsk1" onclick="setListenLevel('hsk1', this)">HSK 1급</button>
@@ -697,7 +697,7 @@ document.getElementById('cardArea').addEventListener('touchend', e => {
   const dx = e.changedTouches[0].clientX - touchX;
   if (Math.abs(dx) > 50) { if (dx < 0) nextCard(); else prevCard(); }
 }, {passive: true});
-setLevel('hsk3', document.querySelector('#levelTabs .tab[data-level="hsk3"]'));
+setLevel('hsk4', document.querySelector('#levelTabs .tab[data-level="hsk4"]'));
 </script>
 </body>
 </html>
